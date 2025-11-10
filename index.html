@@ -1,0 +1,78 @@
+
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
+    <script src="https://unpkg.com/aframe-extras@7.6.0/dist/aframe-extras.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/akbartus/A-Frame-Occlusion-Component/js/occlusion-component.js"></script>
+
+    <script>
+      AFRAME.registerComponent('occluder-material', {
+        init: function () {
+          // Wait for the model to be loaded
+          this.el.addEventListener('model-loaded', () => {
+            // Get the THREE.js object
+            const obj = this.el.getObject3D('mesh');
+            if (!obj) return;
+
+            // Iterate through all parts of the model
+            obj.traverse(node => {
+              // If this part is a mesh, modify its material
+              if (node.isMesh) {
+                // This is the magic line:
+                // It makes the material invisible (stops it from drawing color)
+                node.material.colorWrite = false;
+                
+                // This line ensures it still "blocks" things behind it
+                node.material.depthWrite = true; 
+              }
+            });
+          });
+        }
+      });
+    </script>
+
+  </head>
+  <body>
+    <a-scene bloom="threshold: 1.0; strength: 1; radius: 0.2;" mindar-image="imageTargetSrc: FAV4.mind; filterMinCF:0.00005; filterBeta: 1" color-space="grayscale" renderer="colorManagement: true; toneMapping: ACESFilmic;" vr-mode-ui="enabled: false" ar-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false" light="defaultLightsEnabled: false">
+      <a-assets>
+        <a-asset-item id="vakuova" src="diagram01_01.glb"></a-asset-item>
+        <a-asset-item id="vials" src="vials_0_ANIM.glb"></a-asset-item>
+      </a-assets>
+
+      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+      <a-entity mindar-image-target="targetIndex: 2" animation-mixer>
+        <a-gltf-model rotation="0 0 0" position="0 0 0" scale="1.2 1.2 1.2" src="#vials" animation-mixer>
+      </a-entity>
+
+      <a-entity mindar-image-target="targetIndex: 0" animation-mixer>
+        <a-gltf-model rotation="90 0 0" position="-0.4 -0.25 0" scale="0.04 0.04 0.04" src="#vakuova" animation-mixer>
+      </a-entity>
+
+    
+      <a-entity mindar-image-target="targetIndex: 1">
+
+        <a-gltf-model
+          src="stena.glb"
+          occluder-material  render-order="0"
+          scale="1 1 1"
+          rotation="0 90 0">
+          </a-gltf-model>
+
+        <a-gltf-model
+          src="mistnost.glb"
+          animation-mixer
+          render-order="1"
+          scale="1 1 1"
+          rotation="0 90 0">
+        </a-gltf-model>
+
+        <a-entity light="color: #BBB; type: ambient; intensity: 3.14"></a-entity>
+        <a-entity light="intensity: 1.884; castShadow: true" position="-0.5 1 1"></a-entity>
+
+      </a-entity>
+    </a-scene>
+  </body>
+</html>
