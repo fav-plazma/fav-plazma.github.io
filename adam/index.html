@@ -1,0 +1,94 @@
+
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
+    <script src="https://unpkg.com/aframe-extras@7.6.0/dist/aframe-extras.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+    <!--<script src="https://unpkg.com/aframe-transparent-video-shader@1.0.6/dist/aframe-transparent-video-shader.umd.js"></script>-->
+    <script>
+      window.addEventListener('DOMContentLoaded', () => {
+        const vid = document.querySelector('#videoAlpha');
+
+        // Try to autoplay
+        const tryPlay = () => {
+          vid.play().catch(err => {
+            console.log('Autoplay blocked, waiting for user interaction...');
+            window.addEventListener('click', () => vid.play(), { once: true });
+          });
+        };
+
+        if (vid.readyState >= 2) {
+          tryPlay();
+        } else {
+          vid.addEventListener('canplay', tryPlay, { once: true });
+        }
+      });
+  </script>
+  <script>
+  AFRAME.registerComponent('fix-video-alpha', {
+    init: function () {
+      this.el.addEventListener('materialtextureloaded', e => {
+        const mat = this.el.getObject3D('mesh').material;
+        if (mat.map && mat.map instanceof THREE.VideoTexture) {
+          // Disable premultiplied alpha handling
+          mat.premultipliedAlpha = false;
+          mat.map.premultiplyAlpha = false;
+          mat.map.needsUpdate = true;
+        }
+      });
+    }
+  });
+</script>
+</head>
+
+  </head>
+  <body>
+    <a-scene bloom="threshold: 4.0; strength: 1.2; radius: 0.8;" mindar-image="imageTargetSrc: FAV4.mind;" vr-mode-ui="enabled: false" renderer="colorManagement: true; toneMapping: ACESFilmic;" device-orientation-permission-ui="enabled: true" light="defaultLightsEnabled: false">
+      <a-assets>
+	      <a-asset-item id="vakuova" src="diagram01_01.glb" animation-mixer></a-asset-item>
+        <a-asset-item id="vials" src="vials_04.glb" animation-mixer></a-asset-item>
+        <video 
+          id="videoAlpha"
+          autoplay
+          loop
+          muted
+          playsinline
+          crossorigin="anonymous"
+          src="nano_ProRes_smaller-2.MOV">
+          <!-- <source src="nano_transp_02.webm" type="video/webm" > -->
+          <!-- <source src="nano_hevc_smaller.mp4"> -->
+        </video>
+      </a-assets>
+
+      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+      <a-entity mindar-image-target="targetIndex: 1" animation-mixer>
+        <a-gltf-model rotation="90 0 0 " position="0 -0.15 0" scale="0.0175 0.0175 0.0175" src="#vakuova" animation-mixer>
+      </a-entity>
+
+      <a-entity mindar-image-target="targetIndex: 0" animation-mixer>
+        <a-gltf-model rotation="0 0 0" position="0 0 0" scale="2 2 2" src="#vials" animation-mixer>
+      </a-entity>
+      <a-entity mindar-image-target="targetIndex: 2" animation-mixer>
+        <a-plane 
+          src="#videoAlpha"
+          transparent="true"
+          width="4"
+          height="2.25"
+          position="0 0 0"
+          video-texture-updater
+          fix-video-alpha
+        >
+        </a-plane>
+        
+        <!--<a-entity material="shader: transparent-video; src: #videoId"
+        geometry="primitive: plane;
+                  width: 1.8;
+                  height: 1"
+        position="0 1 -2">
+        </a-entity>-->
+      </a-entity>
+    </a-scene>
+  </body>
+</html>
