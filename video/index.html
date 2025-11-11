@@ -9,10 +9,10 @@
 
     <script>
         /*
-        * Forces A-Frame's video material to use RGBAFormat, 
-        * preserving the alpha channel for transparent video shaders.
+        * Forces RGBA format AND sRGB encoding to bypass
+        * MindAR's color management, which breaks simple shaders.
         */
-        AFRAME.registerComponent('force-rgba', {
+        AFRAME.registerComponent('fix-video-texture', {
         dependencies: ['material'],
         init: function () {
             this.el.addEventListener('materialtextureloaded', this.forceUpdate.bind(this));
@@ -24,8 +24,12 @@
             return; // No video texture
             }
             
-            // The magic bullet
+            // Fix 1: Force RGBA format (to keep alpha)
             material.map.format = THREE.RGBAFormat; 
+
+            // Fix 2: Force sRGB encoding (to bypass color correction)
+            material.map.encoding = THREE.sRGBEncoding;
+
             material.map.needsUpdate = true;
         }
         });
@@ -46,7 +50,7 @@
 
       <a-entity mindar-image-target="targetIndex: 0" animation-mixer>
             <!-- <a-plane src="#nano" width="1.6" height="0.9" position="0 0 0" shader="transparent-video" force-rgba></a-plane> -->
-        <a-entity material="shader: transparent-video; src: #nano" geometry="primitive: plane; width: 1.6; height: 0.9" position="0 0 0" force-rgba>
+        <a-entity material="shader: transparent-video; src: #nano" geometry="primitive: plane; width: 1.6; height: 0.9" position="0 0 0" fix-video-texture>
         </a-entity>
       </a-entity>
     </a-scene>
