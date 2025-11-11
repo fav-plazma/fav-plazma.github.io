@@ -33,7 +33,7 @@
         <video
           id="nano" muted loop autoplay playsinline webkit-playsinline>
           <source src="ano_ProRes_smaller-2.MOV" type="video/mp4;codecs=hvc1">
-          <source src="nano_transp_02.webm" type="video/webm">
+          <!-- <source src="nano_transp_02.webm" type="video/webm"> -->
         </video>
       </a-assets>
 
@@ -45,7 +45,7 @@
 
       <a-entity mindar-image-target="targetIndex: 0" animation-mixer>
         <!-- <a-plane src="#nano" transparent="true" width="1.6" height="0.9" position="0 0 0" shader="transparent-video"></a-plane> -->
-        <a-plane src="#nano" position="0 0 0" transparent="true"/>
+        <a-plane src="#nano" position="0 0 0" shader="transparent-video"/>
       </a-entity>
 
     
