@@ -33,14 +33,11 @@
 
   </head>
   <body>
-    <a-scene bloom="threshold: 1.0; strength: 1; radius: 0.2;" mindar-image="imageTargetSrc: FAV4.mind; filterMinCF:0.0005; filterBeta: 1" color-space="grayscale" renderer="colorManagement: true; toneMapping: ACESFilmic;" vr-mode-ui="enabled: false" ar-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false" light="defaultLightsEnabled: false">
+    <a-scene mindar-image="imageTargetSrc: FAV4.mind; filterMinCF:0.0005; filterBeta: 1" color-space="grayscale" renderer="colorManagement: true; toneMapping: ACESFilmic;" vr-mode-ui="enabled: false" ar-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false" light="defaultLightsEnabled: false">
       <a-assets>
-        <a-asset-item id="vakuova" src="diagram01_01.glb"></a-asset-item>
-        <a-asset-item id="vials" src="vials_0_ANIM.glb"></a-asset-item>
-
         <video
           id="nano" muted loop autoplay playsinline webkit-playsinline>
-          <source src="ano_ProRes_smaller-2.MOV" type="video/mp4;codecs=hvc1">
+          <source src="ano_ProRes_smaller-2.MOV" type="video/MOV;codecs=hvc1">
           <!-- <source src="nano_transp_02.webm" type="video/webm"> -->
         </video>
       </a-assets>
@@ -57,28 +54,6 @@
         </a-entity> -->
       </a-entity>
 
-    
-      <a-entity mindar-image-target="targetIndex: 1">
-
-        <a-gltf-model
-          src="stena.glb"
-          occluder-material  render-order="0"
-          scale="1 1 1"
-          rotation="0 90 0">
-          </a-gltf-model>
-
-        <a-gltf-model
-          src="mistnost.glb"
-          animation-mixer
-          render-order="1"
-          scale="1 1 1"
-          rotation="0 90 0">
-        </a-gltf-model>
-
-        <a-entity light="color: #BBB; type: ambient; intensity: 3.14"></a-entity>
-        <a-entity light="intensity: 1.884; castShadow: true" position="-0.5 1 1"></a-entity>
-
-      </a-entity>
     </a-scene>
   </body>
 </html>
