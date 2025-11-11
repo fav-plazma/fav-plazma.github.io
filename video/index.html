@@ -8,18 +8,26 @@
     <script src="https://unpkg.com/aframe-transparent-video-shader@1.0.6/dist/aframe-transparent-video-shader.umd.js"></script>
 
     <script>
-        AFRAME.registerComponent('fix-video-alpha', {
-            init: function () {
-            this.el.addEventListener('materialtextureloaded', e => {
-                const mat = this.el.getObject3D('mesh').material;
-                if (mat.map && mat.map instanceof THREE.VideoTexture) {
-                // Disable premultiplied alpha handling
-                mat.premultipliedAlpha = false;
-                mat.map.premultiplyAlpha = false;
-                mat.map.needsUpdate = true;
-                }
-            });
+        /*
+        * Forces A-Frame's video material to use RGBAFormat, 
+        * preserving the alpha channel for transparent video shaders.
+        */
+        AFRAME.registerComponent('force-rgba', {
+        dependencies: ['material'],
+        init: function () {
+            this.el.addEventListener('materialtextureloaded', this.forceUpdate.bind(this));
+            this.el.addEventListener('materialvideoloadeddata', this.forceUpdate.bind(this));
+        },
+        forceUpdate: function () {
+            var material = this.el.getObject3D('mesh').material;
+            if (!material.map) {
+            return; // No video texture
             }
+            
+            // The magic bullet
+            material.map.format = THREE.RGBAFormat; 
+            material.map.needsUpdate = true;
+        }
         });
     </script>
 
