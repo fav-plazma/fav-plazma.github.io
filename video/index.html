@@ -9,17 +9,17 @@
 
   </head>
   <body>
-    <a-scene mindar-image="imageTargetSrc: FAV4.mind; filterMinCF:0.0005; filterBeta: 1" renderer="colorManagement: true; toneMapping: ACESFilmic;" vr-mode-ui="enabled: false" ar-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false" light="defaultLightsEnabled: false">
+    <a-scene mindar-image="imageTargetSrc: FAV4.mind; filterMinCF:0.0005; filterBeta: 1" vr-mode-ui="enabled: false" ar-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false" light="defaultLightsEnabled: false">
       <a-assets>
-        <video id="nano" style="opacity: 0;" src="0001-0024.mp4" muted loop autoplay crossorigin="anonymous">
+        <video id="nano" src="0001-0024.mp4" muted loop autoplay crossorigin="anonymous">
         </video>
       </a-assets>
 
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
       <a-entity mindar-image-target="targetIndex: 0" animation-mixer>
-        <a-entity width="1.6" height="0.9" position="0 0 0" material="shader: chromakey; src: #nano; color: 0 0 0" geometry="primitive: plane">
-        </a-entity>
+        <a-plane width="1.6" height="0.9" position="0 0 0" material="shader: chromakey; src: #nano; color: 0 0 0">
+        </a-plane>
       </a-entity>
     </a-scene>
   </body>
