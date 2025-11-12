@@ -5,49 +5,7 @@
     <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
     <script src="https://unpkg.com/aframe-extras@7.6.0/dist/aframe-extras.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
-    <script>
-      AFRAME.registerComponent('spritesheet', {
-        schema: {
-          cols: {type: 'int', default: 4},
-          rows: {type: 'int', default: 4},
-          frameRate: {type: 'number', default: 10},
-          loop: {type: 'boolean', default: true}
-        },
-        init() {
-          this.frame = 0;
-          this.el.addEventListener('loaded', () => {
-            const mesh = this.el.getObject3D('mesh');
-            if (!mesh) return;
-            const material = mesh.material;
-            if (material.map) {
-              material.map.wrapS = material.map.wrapT = THREE.RepeatWrapping;
-              material.map.repeat.set(1 / this.data.cols, 1 / this.data.rows);
-            }
-          });
-        },
-        play() {
-          this.startTime = Date.now();
-          this.tick = AFRAME.utils.throttleTick(this.animate.bind(this), 1000 / this.data.frameRate);
-        },
-        animate() {
-          const mesh = this.el.getObject3D('mesh');
-          if (!mesh) return;
-          const map = mesh.material.map;
-          if (!map) return;
-
-          const totalFrames = this.data.cols * this.data.rows;
-          this.frame++;
-          if (this.frame >= totalFrames) {
-            if (this.data.loop) this.frame = 0;
-            else return;
-          }
-
-          const col = this.frame % this.data.cols;
-          const row = Math.floor(this.frame / this.data.cols);
-          map.offset.set(col / this.data.cols, 1 - (row + 1) / this.data.rows);
-        }
-      });
-</script>
+    <script src="sprite-animator.js"></script>
 
   </head>
   <body>
@@ -56,7 +14,8 @@
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
       <a-entity mindar-image-target="targetIndex: 0" animation-mixer>
-        <a-plane src="sprtsht.png" spritesheet="cols: 4; rows: 6; frameRate: 24; loop: true" material="shader: flat">
+
+        <a-plane position="0 0 0" height="0.9" width="1.6" material="src: sprtsht.png; transparent: true;" sprite-animator="cols: 4; rows: 6; totalFrames: 24; fps: 24;">
         </a-plane>
       </a-entity>
     </a-scene>
