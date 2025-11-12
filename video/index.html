@@ -12,8 +12,8 @@
   <body>
     <a-scene mindar-image="imageTargetSrc: FAV4.mind; filterMinCF:0.0005; filterBeta: 1" vr-mode-ui="enabled: false" ar-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false" light="defaultLightsEnabled: false">
       <a-assets>
-        <video id="nano" src="0001-0024.mp4" muted loop playsinline autoplay crossorigin="anonymous"></video>
-        <video id="alphavideo" src="0001-0024.mp4" loop autoplay muted crossorigin="anonymous"></video>
+        <video id="nano" src="0001-0024.mp4" muted loop autoplay></video>
+        <video id="alphavideo" src="0001-0024.mp4" loop autoplay muted></video>
       </a-assets>
 
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
@@ -22,7 +22,7 @@
         <!-- <a-entity geometry="primitive: plane; width: 1.6; height: 0.9;" position="0 0 0" material="shader: chromakey; src: #nano; color: 0 0 0"></a-entity> -->
 
         <a-entity material="shader: alphavideomap; src: #nano; alpha: #alphavideo" geometry="primitive: plane; width: 1.6; height: 0.9"></a-entity>
-        <a-entity material="shader: alphavideopremul; src: #nano" geometry="primitive: plane; width: 1.6; height: 0.9" position="0 0 0"></a-entity>
+        <a-entity material="shader: alphavideopremul; src: #nano" geometry="primitive: plane; width: 1.6; height: 0.9"></a-entity>
 
       </a-entity>
     </a-scene>
