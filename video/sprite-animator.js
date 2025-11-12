@@ -36,9 +36,11 @@ AFRAME.registerComponent('sprite-animator', {
     // This is the CRITICAL part. You can't animate a texture
     // that hasn't loaded yet. We wait for the material to be ready.
     this.el.addEventListener('materialtextureloaded', this.setup.bind(this));
+    console.log('SPRITE-ANIMATOR: Init OK. Waiting for texture...'); // ADD THIS
   },
 
   setup: function () {
+    console.log('SPRITE-ANIMATOR: Setup CALLED.'); // ADD THIS
     const mesh = this.el.getObject3D('mesh');
     if (!mesh || !mesh.material || !mesh.material.map) {
       console.error("SPRITE-ANIMATOR: Could not find texture. Make sure you have a material with a src.");
