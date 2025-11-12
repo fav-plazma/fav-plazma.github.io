@@ -9,14 +9,11 @@
   </head>
   <body>
     <a-scene mindar-image="imageTargetSrc: FAV4.mind; filterMinCF:0.0005; filterBeta: 1" vr-mode-ui="enabled: false" ar-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false" light="defaultLightsEnabled: false">
-      <a-assets>
-        <img id="nano" src="nano_apng.png">
-      </a-assets>
 
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
       <a-entity mindar-image-target="targetIndex: 0" animation-mixer>
-        <a-image src="#nano"></a-image>
+        <a-image src="nano_apng.png"></a-image>
       </a-entity>
     </a-scene>
   </body>
