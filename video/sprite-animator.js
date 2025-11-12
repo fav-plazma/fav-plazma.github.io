@@ -1,27 +1,16 @@
 /*
- * A-Frame Sprite Sheet Animator Component
+ * A-Frame Sprite Sheet Animator Component (Robust AR-Safe Version)
  *
- * Animates a sprite sheet by updating texture offsets.
- * Assumes sprites are in a grid, read left-to-right, top-to-bottom.
+ * This version is designed to work in dynamic scenes (like MindAR)
+ * where the mesh or material may not be ready on init.
+ * It will poll for the texture inside the tick loop until it finds it.
  */
 AFRAME.registerComponent('sprite-animator', {
   schema: {
-    // The number of columns in the sprite sheet
     cols: { type: 'int', default: 1 },
-    
-    // The number of rows in the sprite sheet
     rows: { type: 'int', default: 1 },
-    
-    // The total number of frames in the animation
     totalFrames: { type: 'int', default: 1 },
-    
-    // Frames per second
     fps: { type: 'int', default: 12 },
-    
-    // Start playing automatically
-    autoplay: { type: 'boolean', default: true },
-    
-    // Loop the animation
     loop: { type: 'boolean', default: true }
   },
 
@@ -29,53 +18,65 @@ AFRAME.registerComponent('sprite-animator', {
     this.texture = null;
     this.frameSize = { w: 0, h: 0 };
     this.currentFrame = 0;
-    this.frameDelay = 0;
+    this.frameDelay = 1000 / this.data.fps;
     this.lastFrameTime = 0;
-    this.isPlaying = this.data.autoplay;
-
-    // This is the CRITICAL part. You can't animate a texture
-    // that hasn't loaded yet. We wait for the material to be ready.
-    this.el.addEventListener('materialtextureloaded', this.setup.bind(this));
-    console.log('SPRITE-ANIMATOR: Init OK. Waiting for texture...'); // ADD THIS
+    this.isInitialized = false; // Setup flag
   },
-
-  setup: function () {
-    console.log('SPRITE-ANIMATOR: Setup CALLED.'); // ADD THIS
+  
+  /**
+   * This function tries to find and configure the texture.
+   * It will be called by tick() until it succeeds.
+   */
+  setupTexture: function () {
     const mesh = this.el.getObject3D('mesh');
+    
+    // 1. Check if mesh and material are ready
     if (!mesh || !mesh.material || !mesh.material.map) {
-      console.error("SPRITE-ANIMATOR: Could not find texture. Make sure you have a material with a src.");
-      return;
+      // Not ready, try again next tick
+      return false;
     }
 
     this.texture = mesh.material.map;
     
-    // We need to tell THREE.js to repeat the texture,
-    // but we will only show one "repeat" (one frame).
+    // 2. Check if texture image data is loaded
+    if (!this.texture.image) {
+      // Texture object exists, but image data not loaded yet
+      return false;
+    }
+
+    // --- SUCCESS: Texture is loaded, run setup ---
     this.texture.wrapS = THREE.RepeatWrapping;
     this.texture.wrapT = THREE.RepeatWrapping;
 
-    // Calculate the size of one frame in UV space (0.0 to 1.0)
+    // Calculate frame size in UV space (0.0 to 1.0)
     this.frameSize.w = 1 / this.data.cols;
     this.frameSize.h = 1 / this.data.rows;
     
     // Set the texture "window" to be the size of one frame
     this.texture.repeat.set(this.frameSize.w, this.frameSize.h);
 
-    // Calculate time delay between frames
-    this.frameDelay = 1000 / this.data.fps;
-    
     // Set the initial frame
     this.updateFrame();
+    
+    this.isInitialized = true; // Mark as setup
+    console.log('SPRITE-ANIMATOR: Setup complete and texture locked.');
+    return true;
   },
 
   tick: function (time, timeDelta) {
-    if (!this.isPlaying || !this.texture) {
-      return;
+    // --- Phase 1: Initialization ---
+    // If not set up, try to set up.
+    if (!this.isInitialized) {
+      // If setupTexture() fails (returns false),
+      // abort this tick and try again next frame.
+      if (!this.setupTexture()) {
+        return; 
+      }
     }
-
+    
+    // --- Phase 2: Animation Loop (only if initialized) ---
     if (time - this.lastFrameTime < this.frameDelay) {
-      // Not time to update yet
-      return;
+      return; // Not time to update yet
     }
 
     this.lastFrameTime = time;
@@ -85,8 +86,7 @@ AFRAME.registerComponent('sprite-animator', {
       if (this.data.loop) {
         this.currentFrame = 0;
       } else {
-        this.currentFrame = this.data.totalFrames - 1;
-        this.pause();
+        this.currentFrame = this.data.totalFrames - 1; // Stop on last frame
       }
     }
 
@@ -94,31 +94,16 @@ AFRAME.registerComponent('sprite-animator', {
   },
 
   updateFrame: function () {
-    if (!this.texture) return; // Safety check
+    if (!this.texture) return; // Should not happen if isInitialized is true
 
-    // Calculate the column and row of the current frame
     const col = this.currentFrame % this.data.cols;
     const row = Math.floor(this.currentFrame / this.data.cols);
 
-    // Calculate the texture offset
-    // X offset is simple: col * frameWidth
+    // Calculate UV offset
     const offsetX = col * this.frameSize.w;
-    
-    // Y offset is tricky. UV coordinates start at (0,0) in the
-    // BOTTOM-LEFT corner. We read sprites top-to-bottom.
-    // So we have to "flip" the Y coordinate.
-    // (1.0 - frameHeight) = position of top-left frame's bottom-left corner
-    // Then subtract (row * frameHeight) to move down
+    // Y is flipped: (1.0 - frameHeight) - (row * frameHeight)
     const offsetY = (1.0 - this.frameSize.h) - (row * this.frameSize.h);
 
     this.texture.offset.set(offsetX, offsetY);
-  },
-
-  play: function () {
-    this.isPlaying = true;
-  },
-
-  pause: function () {
-    this.isPlaying = false;
   }
 });
