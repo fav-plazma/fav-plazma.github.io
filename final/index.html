@@ -5,7 +5,6 @@
     <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
     <script src="https://unpkg.com/aframe-extras@7.6.0/dist/aframe-extras.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/akbartus/A-Frame-Occlusion-Component/js/occlusion-component.js"></script>
     <script src="sprite-animator.js"></script>
 
     <script>
@@ -57,7 +56,7 @@
       </a-entity>
 
       <a-entity mindar-image-target="targetIndex: 1" animation-mixer>
-        <a-plane position="0 0 0" height="1" width="1.95" material="src: #nano; shader:flat" sprite-animator="cols: 1; rows: 24; totalFrames: 24; fps: 24;">
+        <a-plane position="0 0 0" height="1" width="1.95" material="src: #nano; shader:flat; transparent: true" sprite-animator="cols: 1; rows: 24; totalFrames: 24; fps: 24;">
         </a-plane>
       </a-entity>
 
@@ -89,7 +88,7 @@
       </a-entity> -->
 
       <a-entity mindar-image-target="targetIndex: 5" animation-mixer>
-        <a-plane position="0 0 0" height="1" width="1.95" material="src: #plazma; shader:flat" sprite-animator="cols: 1; rows: 24; totalFrames: 24; fps: 24;">
+        <a-plane position="0 0 0" height="1" width="1.95" material="src: #plazma; shader:flat; transparent: true" sprite-animator="cols: 1; rows: 24; totalFrames: 24; fps: 24;">
         </a-plane>
       </a-entity>
 
