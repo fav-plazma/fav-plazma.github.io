@@ -61,24 +61,6 @@
         </a-plane>
       </a-entity>
 
-      <a-entity mindar-image-target="targetIndex: 2">
-        <a-gltf-model
-          src="P_occlusion_stena.glb"
-          occluder-material  render-order="0"
-          scale="0.56 0.56 0.56"
-          rotation="0 90 0">
-          </a-gltf-model>
-        <a-gltf-model
-          src="#udrzitelnost"
-          animation-mixer
-          render-order="1"
-          scale="0.56 0.56 0.56"
-          rotation="0 90 0">
-        </a-gltf-model>
-        <a-entity light="color: #BBB; type: ambient; intensity: 3.14"></a-entity>
-        <a-entity light="intensity: 5.884; castShadow: true" position="-0.5 1 1"></a-entity>
-      </a-entity>
-
       <a-entity mindar-image-target="targetIndex: 3" animation-mixer>
         <a-gltf-model rotation="0 0 0" position="0 0 0" scale="0.8 0.8 0.8" src="#kvantove" animation-mixer>
       </a-entity>
@@ -96,6 +78,24 @@
       <a-entity mindar-image-target="targetIndex: 6" animation-mixer>
         <a-plane position="0 0 0.1" height="0.56" width="1" material="src: #rust; shader:flat; transparent: true" sprite-animator="cols: 8; rows: 12; totalFrames: 96; fps: 24;">
         </a-plane>
+      </a-entity>
+
+      <a-entity mindar-image-target="targetIndex: 2">
+        <a-gltf-model
+          src="P_occlusion_stena.glb"
+          occluder-material  render-order="0"
+          scale="0.56 0.56 0.56"
+          rotation="0 90 0">
+          </a-gltf-model>
+        <a-gltf-model
+          src="#udrzitelnost"
+          animation-mixer
+          render-order="1"
+          scale="0.56 0.56 0.56"
+          rotation="0 90 0">
+        </a-gltf-model>
+        <a-entity light="color: #BBB; type: ambient; intensity: 3.14"></a-entity>
+        <a-entity light="intensity: 5.884; castShadow: true" position="-0.5 1 1"></a-entity>
       </a-entity>
 
       <a-entity mindar-image-target="targetIndex: 7">
