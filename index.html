@@ -37,7 +37,7 @@
 
   </head>
   <body>
-    <a-scene mindar-image="imageTargetSrc: hranate_fancy.mind; maxTrack: 4; filterMinCF:0.001; filterBeta: 10" vr-mode-ui="enabled: false" ar-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false" light="defaultLightsEnabled: false">
+    <a-scene mindar-image="imageTargetSrc: hranate_fancy.mind; maxTrack: 1; filterMinCF:0.001; filterBeta: 10" vr-mode-ui="enabled: false" ar-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false" light="defaultLightsEnabled: false">
 
       <a-assets>
         <a-asset-item id="opticke" src="01M_opticke-materialy.glb"></a-asset-item>
@@ -81,7 +81,7 @@
         </a-plane>
       </a-entity>
 
-      <a-entity mindar-image-target="targetIndex: 2" geometry-merger="preserveOriginal: false">
+      <a-entity mindar-image-target="targetIndex: 2">
         <a-gltf-model
           src="P_occlusion_stena.glb"
           occluder-material  render-order="0"
@@ -99,7 +99,7 @@
         <a-entity light="intensity: 5.884; castShadow: true" position="-0.5 1 1"></a-entity>
       </a-entity>
 
-      <a-entity mindar-image-target="targetIndex: 7" geometry-merger="preserveOriginal: false">
+      <a-entity mindar-image-target="targetIndex: 7">
         <a-gltf-model
           src="P_occlusion_stena.glb"
           occluder-material  render-order="0"
@@ -117,7 +117,7 @@
         <a-entity light="intensity: 5.884; castShadow: true" position="-0.5 1 1"></a-entity>
       </a-entity>
 
-      <a-entity mindar-image-target="targetIndex: 8" geometry-merger="preserveOriginal: false">
+      <a-entity mindar-image-target="targetIndex: 8">
         <a-gltf-model
           src="P_occlusion_stena.glb"
           occluder-material  render-order="0"
