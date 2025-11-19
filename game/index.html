@@ -1,0 +1,163 @@
+
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+    <script>
+        AFRAME.scenes[0].addEventListener("renderstart", () => {
+            const bara = document.querySelector("bara");
+            bara.addEventListener("targetFound", () => {
+            console.log("Image XX found!");
+            // vec co se stane, kdyz se najde bara
+            });
+        });
+
+        AFRAME.scenes[0].addEventListener("renderstart", () => {
+            const helena = document.querySelector("#helena");
+            helena.addEventListener("targetFound", () => {
+            console.log("Image XX found!");
+            // vec co se stane, kdyz se najde helena
+            });
+        });
+
+        AFRAME.scenes[0].addEventListener("renderstart", () => {
+            const jarek = document.querySelector("#jarek");
+            jarek.addEventListener("targetFound", () => {
+            console.log("Image XX found!");
+            // vec co se stane, kdyz se najde jarek
+            });
+        });
+        
+        AFRAME.scenes[0].addEventListener("renderstart", () => {
+            const jura = document.querySelector("#jura");
+            jura.addEventListener("targetFound", () => {
+            console.log("Image XX found!");
+            // vec co se stane, kdyz se najde jura
+            });
+        });
+
+        AFRAME.scenes[0].addEventListener("renderstart", () => {
+            const karel = document.querySelector("#karel");
+            karel.addEventListener("targetFound", () => {
+            console.log("Image XX found!");
+            // vec co se stane, kdyz se najde karel
+            });
+        });
+
+        AFRAME.scenes[0].addEventListener("renderstart", () => {
+            const magda = document.querySelector("#magda");
+            magda.addEventListener("targetFound", () => {
+            console.log("Image XX found!");
+            // vec co se stane, kdyz se najde magda
+            });
+        });
+
+        AFRAME.scenes[0].addEventListener("renderstart", () => {
+            const paula = document.querySelector("#paula");
+            paula.addEventListener("targetFound", () => {
+            console.log("Image XX found!");
+            // vec co se stane, kdyz se najde paula
+            });
+        });
+
+        AFRAME.scenes[0].addEventListener("renderstart", () => {
+            const prokop = document.querySelector("#prokop");
+            prokop.addEventListener("targetFound", () => {
+            console.log("Image XX found!");
+            // vec co se stane, kdyz se najde prokop
+            });
+        });
+
+        AFRAME.scenes[0].addEventListener("renderstart", () => {
+            const vlasta = document.querySelector("#vlasta");
+            vlasta.addEventListener("targetFound", () => {
+            console.log("Image XX found!");
+            // vec co se stane, kdyz se najde vlasta
+            });
+        });
+
+        AFRAME.scenes[0].addEventListener("renderstart", () => {
+            const zdenda = document.querySelector("#zdenda");
+            zdenda.addEventListener("targetFound", () => {
+            console.log("Image XX found!");
+            // vec co se stane, kdyz se najde zdenda
+            });
+        });
+    </script>
+
+    <style>
+      #example-scanning-overlay {
+        display: flex;
+      }
+      #example-scanning-overlay.hidden {
+        display: none;
+      }
+    </style>
+
+  </head>
+
+  <body>
+    <div id="scan-overlay" class="hidden">
+        <h1 style="color: white; text-align: center;">
+            Naskenujte jednu z deseti karet s plazmou
+        </h1>
+    </div>
+    <a-scene mindar-image="imageTargetSrc: targets_plazmici.mind; maxTrack: 1; filterMinCF:0.001; filterBeta: 10; uiScanning: #scan-overlay" vr-mode-ui="enabled: false" ar-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false" light="defaultLightsEnabled: false">
+        <a-assets>
+            <img id="bara-img" src="bara.png">
+            <img id="helena-img" src="helena.png">
+            <img id="jarek-img" src="jarek.png">
+            <img id="jura-img" src="jura.png">
+            <img id="karel-img" src="karel.png">
+            <img id="magda-img" src="magda.png">
+            <img id="paula-img" src="paula.png">
+            <img id="prokop-img" src="prokop.png">
+            <img id="vlasta-img" src="vlasta.png">
+            <img id="zdenda-img" src="zdenda.png">
+        </a-assets>
+        <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+        <a-entity id="bara" mindar-image-target="targetIndex: 0">
+             <a-image src="#bara-img"></a-image>
+        </a-entity>
+
+        <a-entity id="helena" mindar-image-target="targetIndex: 1">
+            <a-image src="#helena-img"></a-image>
+        </a-entity>
+
+        <a-entity id="jarek" mindar-image-target="targetIndex: 2">
+            <a-image src="#jarek-img"></a-image>
+        </a-entity>
+
+        <a-entity id="jura" mindar-image-target="targetIndex: 3">
+            <a-image src="#jura-img"></a-image>
+        </a-entity>
+
+        <a-entity id="karel" mindar-image-target="targetIndex: 4">
+            <a-image src="#karel-img"></a-image>
+        </a-entity>
+
+        <a-entity id="magda" mindar-image-target="targetIndex: 5">
+            <a-image src="#magda-img"></a-image>
+        </a-entity>
+
+        <a-entity id="paula" mindar-image-target="targetIndex: 6">
+            <a-image src="#paula-img"></a-image>
+        </a-entity>
+
+        <a-entity id="prokop" mindar-image-target="targetIndex: 7">
+            <a-image src="#prokop-img"></a-image>
+        </a-entity>
+
+        <a-entity id="vlasta" mindar-image-target="targetIndex: 8">
+            <a-image src="#vlasta-img"></a-image>
+        </a-entity>
+
+        <a-entity id="zdenda" mindar-image-target="targetIndex: 9">
+            <a-image src="#zdenda-img"></a-image>
+        </a-entity>
+
+    </a-scene>
+  </body>
+</html>
