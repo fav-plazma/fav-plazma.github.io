@@ -87,12 +87,36 @@
     </script>
 
     <style>
-      #example-scanning-overlay {
-        display: flex;
-      }
-      #example-scanning-overlay.hidden {
-        display: none;
-      }
+        #scan-overlay  {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            background: transparent;
+            z-index: 2;
+        }
+
+        #scan-overlay.hidden {
+            display: none;
+        }
+
+        .scanline {
+            position: absolute;
+            width: 100%;
+            height: 100px;
+            background-image: linear-gradient(to bottom, white, transparent);
+            animation: move 2s linear infinite;
+        }
+
+        @keyframes move {
+        0%, 100% { top: 0% }
+        50% { top: calc(100% - 10px) }
+        }
+
     </style>
 
   </head>
@@ -102,6 +126,8 @@
         <h1 style="color: white; text-align: center;">
             Naskenujte jednu z deseti karet s plazmou
         </h1>
+        <div class="scanline"></div>
+
     </div>
     <a-scene mindar-image="imageTargetSrc: targets_final_3.mind; maxTrack: 1; filterMinCF:0.001; filterBeta: 10; uiScanning: #scan-overlay" vr-mode-ui="enabled: false" ar-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false" light="defaultLightsEnabled: false">
         <a-assets>
