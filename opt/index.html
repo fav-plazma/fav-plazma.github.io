@@ -45,6 +45,7 @@
         <a-asset-item id="vakuova" src="09P_vakuova-fyzika_compressed.glb"></a-asset-item>
         <a-asset-item id="charakterizace" src="10P_charakterizace-mat_compressed.glb"></a-asset-item>
         <video id="03D" src="03D.mp4" playsinline loop muted crossorigin="anonymous"></video>
+        <video id="06D" src="06D.mp4" playsinline loop muted crossorigin="anonymous"></video>
       </a-assets>
 
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
@@ -69,6 +70,7 @@
       </a-entity>
 
       <a-entity mindar-image-target="targetIndex: 4" animation-mixer>
+        <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #06D"></a-plane>
         <a-plane position="0 0 0.1" height="0.56" width="1" material="shader:flat; transparent: true" sprite-animator="totalFrames: 96; fps: 24; folderPath: 06D">
         </a-plane>
       </a-entity>
@@ -79,8 +81,9 @@
       </a-entity>
 
       <a-entity mindar-image-target="targetIndex: 0" animation-mixer>
-        <a-plane position="0 0 0.1" height="0.56" width="1" material="shader:flat; transparent: true" sprite-animator="totalFrames: 96; fps: 24; folderPath: 08D">
-        </a-plane>
+        <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #06D"></a-plane>
+        <!--<a-plane position="0 0 0.1" height="0.56" width="1" material="shader:flat; transparent: true" sprite-animator="totalFrames: 96; fps: 24; folderPath: 08D">
+        </a-plane>-->
       </a-entity>
 
       <a-entity mindar-image-target="targetIndex: 8">
