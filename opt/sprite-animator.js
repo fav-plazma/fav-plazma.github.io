@@ -13,8 +13,9 @@ AFRAME.registerComponent('sprite-animator', {
     this.frameDelay = 1000 / this.data.fps;
     this.accumulator = 0;
     this.isInitialized = false;
-    this.frameCache = {}; // Cache only 2-3 frames to reduce memory
-    this.maxCacheSize = 2; // Keep only current and next frame
+    this.frameCache = {}; // LRU cache for frames
+    this.frameAccessOrder = []; // Track frame access order for LRU
+    this.maxCacheSize = 8; // Keep up to 8 frames in memory (balance between memory & network)
     this.currentTexture = null;
     this.textureLoader = new THREE.TextureLoader();
     this.isUsingFrameFolder = this.data.folderPath.length > 0;
@@ -58,18 +59,27 @@ AFRAME.registerComponent('sprite-animator', {
   },
 
   cleanupOldFrames() {
-    // Keep only current and next frame to minimize memory usage
-    const framesToKeep = [this.frame, (this.frame + 1) % this.data.totalFrames];
-    
-    Object.keys(this.frameCache).forEach(frameNum => {
-      const num = parseInt(frameNum);
-      if (!framesToKeep.includes(num)) {
-        if (this.frameCache[frameNum].dispose) {
-          this.frameCache[frameNum].dispose();
+    // LRU cache: keep only maxCacheSize frames, dispose oldest unused ones
+    if (Object.keys(this.frameCache).length > this.maxCacheSize) {
+      // Remove oldest frame from access order
+      const oldestFrame = this.frameAccessOrder.shift();
+      if (oldestFrame !== undefined && this.frameCache[oldestFrame]) {
+        if (this.frameCache[oldestFrame].dispose) {
+          this.frameCache[oldestFrame].dispose();
         }
-        delete this.frameCache[frameNum];
+        delete this.frameCache[oldestFrame];
       }
-    });
+    }
+  },
+
+  markFrameAccessed(frameNumber) {
+    // Remove from order if already exists
+    const index = this.frameAccessOrder.indexOf(frameNumber);
+    if (index > -1) {
+      this.frameAccessOrder.splice(index, 1);
+    }
+    // Add to end (most recently used)
+    this.frameAccessOrder.push(frameNumber);
   },
 
   async loadFrameTexture(frameNumber) {
@@ -94,6 +104,8 @@ AFRAME.registerComponent('sprite-animator', {
   updateFrameTexture(frameNumber) {
     const mesh = this.el.getObject3D('mesh');
     if (!mesh || !mesh.material) return;
+
+    this.markFrameAccessed(frameNumber);
 
     if (this.frameCache[frameNumber]) {
       // Texture is cached, use it immediately
@@ -127,13 +139,7 @@ AFRAME.registerComponent('sprite-animator', {
       this.frame = (this.frame + 1) % this.data.totalFrames;
       this.updateFrameTexture(this.frame);
       
-      // Pre-load next frame to avoid stutter
-      const nextFrame = (this.frame + 1) % this.data.totalFrames;
-      if (!this.frameCache[nextFrame]) {
-        this.loadFrameTexture(nextFrame);
-      }
-      
-      // Clean up old frames to prevent memory buildup
+      // Clean up cache if it exceeds max size
       this.cleanupOldFrames();
     } else {
       // Fallback to original spritesheet method
@@ -153,5 +159,54 @@ AFRAME.registerComponent('sprite-animator', {
   remove() {
     // Clean up when component is removed
     this.disposeTextures();
+  }
+});
+
+// HEHE
+
+AFRAME.registerComponent('alpha-video', {
+  schema: {
+    video: {type: 'selector'}
+  },
+  init: function () {
+    const videoEl = this.data.video;
+    if (!videoEl) return;
+
+    const texture = new THREE.VideoTexture(videoEl);
+    texture.format = THREE.RGBAFormat;
+    
+    // The shader splits the texture in half
+    // Left half = Color, Right half = Opacity
+    const material = new THREE.ShaderMaterial({
+      uniforms: {
+        map: { value: texture }
+      },
+      vertexShader: `
+        varying vec2 vUv;
+        void main() {
+          vUv = uv;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        uniform sampler2D map;
+        varying vec2 vUv;
+        void main() {
+          // Sample color from left half (0.0 to 0.5)
+          vec4 color = texture2D(map, vec2(vUv.x * 0.5, vUv.y));
+          // Sample alpha from right half (0.5 to 1.0)
+          vec4 alpha = texture2D(map, vec2(0.5 + vUv.x * 0.5, vUv.y));
+          
+          gl_FragColor = vec4(color.rgb, alpha.r);
+        }
+      `,
+      transparent: true,
+      side: THREE.DoubleSide
+    });
+
+    this.el.getObject3D('mesh').material = material;
+    
+    // Auto-play handling
+    videoEl.play().catch((e) => console.log("User interaction needed for video"));
   }
 });

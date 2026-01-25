@@ -36,7 +36,7 @@
 
   </head>
   <body>
-    <a-scene mindar-image="imageTargetSrc: targets_final_3.mind; maxTrack: 1; filterMinCF:0.001; filterBeta: 10" vr-mode-ui="enabled: false" ar-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false" light="defaultLightsEnabled: false">
+    <a-scene mindar-image="imageTargetSrc: targets_final_3.mind; maxTrack: 1; filterMinCF:0.0005; filterBeta: 15" vr-mode-ui="enabled: false" ar-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false" light="defaultLightsEnabled: false">
 
       <a-assets>
         <a-asset-item id="opticke" src="01M_opticke-materialy.glb"></a-asset-item>
@@ -44,6 +44,7 @@
         <a-asset-item id="kvantove" src="05M_kvantove-materialy.glb"></a-asset-item>
         <a-asset-item id="vakuova" src="09P_vakuova-fyzika_compressed.glb"></a-asset-item>
         <a-asset-item id="charakterizace" src="10P_charakterizace-mat_compressed.glb"></a-asset-item>
+        <video id="03D" src="03D.mp4" playsinline loop muted crossorigin="anonymous"></video>
       </a-assets>
 
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
@@ -62,8 +63,9 @@
       </a-entity>
 
       <a-entity mindar-image-target="targetIndex: 7" animation-mixer>
-        <a-plane position="0 0 0.1" height="0.56" width="1" material="shader:flat; transparent: true" sprite-animator="totalFrames: 24; fps: 24; folderPath: 03D">
-        </a-plane>
+        <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #03D"></a-plane>
+        <!--<a-plane position="0 0 0.1" height="0.56" width="1" material="shader:flat; transparent: true" sprite-animator="totalFrames: 24; fps: 24; folderPath: 03D">
+        </a-plane>--> 
       </a-entity>
 
       <a-entity mindar-image-target="targetIndex: 4" animation-mixer>
