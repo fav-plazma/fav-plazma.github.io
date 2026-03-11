@@ -5,82 +5,10 @@
     <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
     <script>
-        const bara = document.querySelector("#bara");
-        bara.addEventListener("targetFound", event => {
+        const baraf = document.querySelector("#bara");
+        baraf.addEventListener("targetFound", event => {
         console.log("Image bara found!");
         document.getElementById("caller").innerHTML = "Chztil jsi bara!";
-        });
-
-        AFRAME.scenes[0].addEventListener("renderstart", () => {
-            const helena = document.querySelector("#helena");
-            helena.addEventListener("targetFound", event => {
-            console.log("Image helena found!");
-            // vec co se stane, kdyz se najde helena
-            });
-        });
-
-        AFRAME.scenes[0].addEventListener("renderstart", () => {
-            const jarek = document.querySelector("#jarek");
-            jarek.addEventListener("targetFound", () => {
-            console.log("Image jarek found!");
-            // vec co se stane, kdyz se najde jarek
-            });
-        });
-        
-        AFRAME.scenes[0].addEventListener("renderstart", () => {
-            const jura = document.querySelector("#jura");
-            jura.addEventListener("targetFound", () => {
-            console.log("Image XX found!");
-            // vec co se stane, kdyz se najde jura
-            });
-        });
-
-        AFRAME.scenes[0].addEventListener("renderstart", () => {
-            const karel = document.querySelector("#karel");
-            karel.addEventListener("targetFound", () => {
-            console.log("Image XX found!");
-            // vec co se stane, kdyz se najde karel
-            });
-        });
-
-        AFRAME.scenes[0].addEventListener("renderstart", () => {
-            const magda = document.querySelector("#magda");
-            magda.addEventListener("targetFound", () => {
-            console.log("Image XX found!");
-            // vec co se stane, kdyz se najde magda
-            });
-        });
-
-        AFRAME.scenes[0].addEventListener("renderstart", () => {
-            const paula = document.querySelector("#paula");
-            paula.addEventListener("targetFound", () => {
-            console.log("Image XX found!");
-            // vec co se stane, kdyz se najde paula
-            });
-        });
-
-        AFRAME.scenes[0].addEventListener("renderstart", () => {
-            const prokop = document.querySelector("#prokop");
-            prokop.addEventListener("targetFound", () => {
-            console.log("Image XX found!");
-            // vec co se stane, kdyz se najde prokop
-            });
-        });
-
-        AFRAME.scenes[0].addEventListener("renderstart", () => {
-            const vlasta = document.querySelector("#vlasta");
-            vlasta.addEventListener("targetFound", () => {
-            console.log("Image XX found!");
-            // vec co se stane, kdyz se najde vlasta
-            });
-        });
-
-        AFRAME.scenes[0].addEventListener("renderstart", () => {
-            const zdenda = document.querySelector("#zdenda");
-            zdenda.addEventListener("targetFound", () => {
-            console.log("Image XX found!");
-            // vec co se stane, kdyz se najde zdenda
-            });
         });
     </script>
 
