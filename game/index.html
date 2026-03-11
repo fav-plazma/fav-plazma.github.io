@@ -7,7 +7,7 @@
     <script>
         AFRAME.scenes[0].addEventListener("renderstart", () => {
             const bara = document.querySelector("#bara");
-            bara.addEventListener("targetFound", () => {
+            bara.addEventListener("targetFound", event => {
             console.log("Image bara found!");
             document.getElementById("caller").innerHTML = "Chztil jsi bara!";
             });
@@ -15,7 +15,7 @@
 
         AFRAME.scenes[0].addEventListener("renderstart", () => {
             const helena = document.querySelector("#helena");
-            helena.addEventListener("targetFound", () => {
+            helena.addEventListener("targetFound", event => {
             console.log("Image helena found!");
             // vec co se stane, kdyz se najde helena
             });
