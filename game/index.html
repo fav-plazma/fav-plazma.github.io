@@ -9,7 +9,7 @@
             const bara = document.querySelector("bara");
             bara.addEventListener("targetFound", () => {
             console.log("Image bara found!");
-            // vec co se stane, kdyz se najde bara
+            document.getElementById("caller").innerHTML = "<h2>Chztil jsi bara</h2>";
             });
         });
 
@@ -122,6 +122,8 @@
   </head>
 
   <body>
+    <h1 style="color: white; text-align: center;" id="caller"> Nic </h1>
+
     <div id="scan-overlay" class="hidden">
         <h1 style="color: white; text-align: center;">
             Pochytejte všechny plazmíky
