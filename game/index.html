@@ -5,12 +5,10 @@
     <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
     <script>
-        AFRAME.scenes[0].addEventListener("renderstart", () => {
-            const bara = document.querySelector("#bara");
-            bara.addEventListener("targetFound", event => {
-            console.log("Image bara found!");
-            document.getElementById("caller").innerHTML = "Chztil jsi bara!";
-            });
+        const bara = document.querySelector("#bara");
+        bara.addEventListener("targetFound", event => {
+        console.log("Image bara found!");
+        document.getElementById("caller").innerHTML = "Chztil jsi bara!";
         });
 
         AFRAME.scenes[0].addEventListener("renderstart", () => {
