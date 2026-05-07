@@ -1,0 +1,92 @@
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
+    <script src="https://unpkg.com/aframe-extras@7.6.0/dist/aframe-extras.min.js"></script>
+    <script src="https://unpkg.com/aframe-geometry-merger-component/dist/aframe-geometry-merger-component.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/akbartus/A-Frame-Occlusion-Component/js/occlusion-component.js"></script>
+    <script src="sprite-animator.js"></script>
+
+    <script>
+      AFRAME.registerComponent('occluder-material', {
+        init: function () {
+          // Wait for the model to be loaded
+          this.el.addEventListener('model-loaded', () => {
+            // Get the THREE.js object
+            const obj = this.el.getObject3D('mesh');
+            if (!obj) return;
+
+            // Iterate through all parts of the model
+            obj.traverse(node => {
+              // If this part is a mesh, modify its material
+              if (node.isMesh) {
+                // This is the magic line:
+                // It makes the material invisible (stops it from drawing color)
+                node.material.colorWrite = false;
+                
+                // This line ensures it still "blocks" things behind it
+                node.material.depthWrite = true; 
+              }
+            });
+          });
+        }
+      });
+    </script>
+
+  </head>
+  <body>
+    <a-scene mindar-image="imageTargetSrc: target_novy_bezokraje.mind; maxTrack: 2; filterMinCF:0.0001; filterBeta: 30" vr-mode-ui="enabled: false" ar-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false" light="defaultLightsEnabled: false">
+
+      <a-assets>
+        <video id="03D" src="03D.mp4" playsinline loop muted crossorigin="anonymous"></video>
+        <video id="06D" src="06D.mp4" playsinline loop muted crossorigin="anonymous"></video>
+        <video id="07D" src="07D.mp4" playsinline loop muted crossorigin="anonymous"></video>
+        <video id="08D" src="08D.mp4" playsinline loop muted crossorigin="anonymous"></video>
+      </a-assets>
+
+      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+      <a-entity mindar-image-target="targetIndex: 9" animation-mixer>
+        <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #06D"></a-plane>
+      </a-entity>
+
+      <a-entity mindar-image-target="targetIndex: 5" animation-mixer>
+        <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #06D"></a-plane>
+      </a-entity>
+
+      <a-entity mindar-image-target="targetIndex: 6" animation-mixer>
+        <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #06D"></a-plane>
+      </a-entity>
+
+      <a-entity mindar-image-target="targetIndex: 7" animation-mixer>
+        <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #03D"></a-plane>
+      </a-entity>
+
+      <a-entity mindar-image-target="targetIndex: 4" animation-mixer>
+        <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #06D"></a-plane>
+      </a-entity>
+
+      <a-entity mindar-image-target="targetIndex: 1" animation-mixer>
+        <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #07D"></a-plane>
+      </a-entity>
+
+      <a-entity mindar-image-target="targetIndex: 0" animation-mixer>
+        <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #08D"></a-plane>
+      </a-entity>
+
+      <a-entity mindar-image-target="targetIndex: 8">
+        <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #06D"></a-plane>
+      </a-entity>
+
+      <a-entity mindar-image-target="targetIndex: 2">
+        <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #08D"></a-plane>
+      </a-entity>
+
+      <a-entity mindar-image-target="targetIndex: 3">
+        <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #06D"></a-plane>
+      </a-entity>
+
+    </a-scene>
+  </body>
+</html>
