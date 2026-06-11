@@ -37,88 +37,6 @@
           });
         }
       });
-
-      AFRAME.registerComponent('modern-backdrop', {
-        schema: {
-          width: {type: 'number', default: 1.1},
-          height: {type: 'number', default: 0.64},
-          radius: {type: 'number', default: 0.08},
-          opacity: {type: 'number', default: 0.85},
-          color: {type: 'color', default: '#ffffff'} // Base color (Hex)
-        },
-
-        init: function () {
-          const data = this.data;
-          
-          // Use a basic plane, the shader will "cut out" the rounded corners
-          const geometry = new THREE.PlaneGeometry(data.width, data.height);
-
-          const vertexShader = `
-            varying vec2 vUv;
-            void main() {
-              vUv = uv;
-              gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-            }
-          `;
-
-          // GLSL SDF (Signed Distance Field) Magic
-          const fragmentShader = `
-            varying vec2 vUv;
-            uniform vec2 uSize;
-            uniform float uRadius;
-            uniform float uOpacity;
-            uniform vec3 uColor;
-
-            // Math to calculate distance from the center to a rounded corner box
-            float roundedBoxSDF(vec2 CenterPosition, vec2 Size, float Radius) {
-                return length(max(abs(CenterPosition) - Size + Radius, 0.0)) - Radius;
-            }
-
-            void main() {
-                // Map UV coordinates to actual plane dimensions
-                vec2 pos = (vUv - 0.5) * uSize;
-                vec2 extents = (uSize / 2.0);
-
-                // Get distance to the edge
-                float dist = roundedBoxSDF(pos, extents, uRadius);
-
-                // Anti-aliasing for perfectly smooth edges at any resolution
-                float edgeSoftness = 0.005 * max(uSize.x, uSize.y);
-                float alpha = smoothstep(edgeSoftness, -edgeSoftness, dist);
-
-                // Create a subtle inner edge highlight (Glass effect)
-                float innerBorder = smoothstep(-uRadius * 0.3, -edgeSoftness, dist);
-                vec3 finalColor = mix(uColor, vec3(1.0), innerBorder * 0.4);
-
-                // Discard transparent pixels so they don't block AR
-                if (alpha < 0.01) discard;
-
-                gl_FragColor = vec4(finalColor, alpha * uOpacity);
-            }
-          `;
-
-          const material = new THREE.ShaderMaterial({
-            vertexShader: vertexShader,
-            fragmentShader: fragmentShader,
-            uniforms: {
-              uSize: { value: new THREE.Vector2(data.width, data.height) },
-              uRadius: { value: data.radius },
-              uOpacity: { value: data.opacity },
-              uColor: { value: new THREE.Color(data.color) }
-            },
-            transparent: true,
-            side: THREE.DoubleSide,
-            depthWrite: false // Crucial so it doesn't hide the video sitting on top of it
-          });
-
-          this.mesh = new THREE.Mesh(geometry, material);
-          this.el.setObject3D('mesh', this.mesh);
-        },
-
-        remove: function () {
-          this.el.removeObject3D('mesh');
-        }
-      });
     </script>
 
     <style>
@@ -232,43 +150,52 @@
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
       <xrextras-named-image-target name="analysis">
-        <a-entity modern-backdrop="width: 1.1; height: 0.64; radius: 0.08; opacity: 0.75; color: #ffffff" position="0 0 0.05"> </a-entity>
-        <a-plane position="0 0 0.1" height="0.54" width="1" alpha-video="video: #03" material="blending: additive"></a-plane>
+        <a-plane position="0 0 0.05" height="0.54" width="1" frosted-glass></a-plane>
+        <a-plane position="0 0 0.1" height="0.54" width="1" alpha-video="video: #03"></a-plane>
       </xrextras-named-image-target>
 
       <xrextras-named-image-target name="atomic">
-        <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #06D" material="blending: additive"></a-plane>
+        <a-plane position="0 0 0.05" height="0.56" width="1" frosted-glass></a-plane>
+        <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #06D"></a-plane>
       </xrextras-named-image-target>
 
       <xrextras-named-image-target name="modeling">
+        <a-plane position="0 0 0.05" height="0.56" width="1" frosted-glass></a-plane>
         <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #06D"></a-plane>
       </xrextras-named-image-target>
 
       <xrextras-named-image-target name="nanomat">
+        <a-plane position="0 0 0.05" height="0.56" width="1" frosted-glass></a-plane>
         <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #03D"></a-plane>
       </xrextras-named-image-target>
 
       <xrextras-named-image-target name="optical">
+        <a-plane position="0 0 0.05" height="0.56" width="1" frosted-glass></a-plane>
         <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #06D"></a-plane>
       </xrextras-named-image-target>
 
       <xrextras-named-image-target name="protective">
+        <a-plane position="0 0 0.05" height="0.56" width="1" frosted-glass></a-plane>
         <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #07D"></a-plane>
       </xrextras-named-image-target>
 
       <xrextras-named-image-target name="synthesis">
+        <a-plane position="0 0 0.05" height="0.56" width="1" frosted-glass></a-plane>
         <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #08D"></a-plane>
       </xrextras-named-image-target>
 
       <xrextras-named-image-target name="quantum">
+        <a-plane position="0 0 0.05" height="0.56" width="1" frosted-glass></a-plane>
         <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #06D"></a-plane>
       </xrextras-named-image-target>
 
       <xrextras-named-image-target name="sustainable">
+        <a-plane position="0 0 0.05" height="0.56" width="1" frosted-glass></a-plane>
         <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #08D"></a-plane>
       </xrextras-named-image-target>
 
       <xrextras-named-image-target name="vacuum">
+        <a-plane position="0 0 0.05" height="0.56" width="1" frosted-glass></a-plane>
         <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #06D"></a-plane>
       </xrextras-named-image-target>
 
