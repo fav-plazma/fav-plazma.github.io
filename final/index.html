@@ -38,61 +38,84 @@
         }
       });
 
-      AFRAME.registerComponent('rounded-glass-backdrop', {
+      AFRAME.registerComponent('modern-backdrop', {
         schema: {
-          width: {type: 'number', default: 1},
-          height: {type: 'number', default: 0.54},
-          radius: {type: 'number', default: 0.05}, // How round the corners are
-          blur: {type: 'number', default: 0.5},    // Controls the "Gaussian" blur amount (0.0 to 1.0)
-          opacity: {type: 'number', default: 1.0}  
+          width: {type: 'number', default: 1.1},
+          height: {type: 'number', default: 0.64},
+          radius: {type: 'number', default: 0.08},
+          opacity: {type: 'number', default: 0.85},
+          color: {type: 'color', default: '#ffffff'} // Base color (Hex)
         },
 
         init: function () {
           const data = this.data;
-
-          // 1. Mathematically draw a rounded rectangle
-          const shape = new THREE.Shape();
-          const w = data.width;
-          const h = data.height;
-          const r = data.radius;
           
-          // Center the shape around 0,0,0
-          const x = -w / 2;
-          const y = -h / 2;
+          // Use a basic plane, the shader will "cut out" the rounded corners
+          const geometry = new THREE.PlaneGeometry(data.width, data.height);
 
-          shape.moveTo(x, y + r);
-          shape.lineTo(x, y + h - r);
-          shape.quadraticCurveTo(x, y + h, x + r, y + h);
-          shape.lineTo(x + w - r, y + h);
-          shape.quadraticCurveTo(x + w, y + h, x + w, y + h - r);
-          shape.lineTo(x + w, y + r);
-          shape.quadraticCurveTo(x + w, y, x + w - r, y);
-          shape.lineTo(x + r, y);
-          shape.quadraticCurveTo(x, y, x, y + r);
+          const vertexShader = `
+            varying vec2 vUv;
+            void main() {
+              vUv = uv;
+              gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+            }
+          `;
 
-          // 2. Convert the 2D shape into 3D geometry
-          const geometry = new THREE.ShapeGeometry(shape);
+          // GLSL SDF (Signed Distance Field) Magic
+          const fragmentShader = `
+            varying vec2 vUv;
+            uniform vec2 uSize;
+            uniform float uRadius;
+            uniform float uOpacity;
+            uniform vec3 uColor;
 
-          // 3. The Magic Material: Frosted Glass / Transmission
-          const material = new THREE.MeshPhysicalMaterial({
-            color: 0xffffff,
-            metalness: 0.1,
-            roughness: data.blur,   // This acts as your Gaussian Blur!
-            transmission: 1.0,      // Makes it act like glass (refracts background)
-            ior: 1.5,               // Index of Refraction (standard glass)
-            thickness: 0.1,         // Optical thickness
+            // Math to calculate distance from the center to a rounded corner box
+            float roundedBoxSDF(vec2 CenterPosition, vec2 Size, float Radius) {
+                return length(max(abs(CenterPosition) - Size + Radius, 0.0)) - Radius;
+            }
+
+            void main() {
+                // Map UV coordinates to actual plane dimensions
+                vec2 pos = (vUv - 0.5) * uSize;
+                vec2 extents = (uSize / 2.0);
+
+                // Get distance to the edge
+                float dist = roundedBoxSDF(pos, extents, uRadius);
+
+                // Anti-aliasing for perfectly smooth edges at any resolution
+                float edgeSoftness = 0.005 * max(uSize.x, uSize.y);
+                float alpha = smoothstep(edgeSoftness, -edgeSoftness, dist);
+
+                // Create a subtle inner edge highlight (Glass effect)
+                float innerBorder = smoothstep(-uRadius * 0.3, -edgeSoftness, dist);
+                vec3 finalColor = mix(uColor, vec3(1.0), innerBorder * 0.4);
+
+                // Discard transparent pixels so they don't block AR
+                if (alpha < 0.01) discard;
+
+                gl_FragColor = vec4(finalColor, alpha * uOpacity);
+            }
+          `;
+
+          const material = new THREE.ShaderMaterial({
+            vertexShader: vertexShader,
+            fragmentShader: fragmentShader,
+            uniforms: {
+              uSize: { value: new THREE.Vector2(data.width, data.height) },
+              uRadius: { value: data.radius },
+              uOpacity: { value: data.opacity },
+              uColor: { value: new THREE.Color(data.color) }
+            },
             transparent: true,
-            opacity: data.opacity,
-            side: THREE.DoubleSide
+            side: THREE.DoubleSide,
+            depthWrite: false // Crucial so it doesn't hide the video sitting on top of it
           });
 
-          // 4. Create the mesh and apply it to the A-Frame entity
           this.mesh = new THREE.Mesh(geometry, material);
           this.el.setObject3D('mesh', this.mesh);
         },
 
         remove: function () {
-          // Clean up memory when removed
           this.el.removeObject3D('mesh');
         }
       });
@@ -209,7 +232,7 @@
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
       <xrextras-named-image-target name="analysis">
-        <a-entity rounded-glass-backdrop="width: 1.1; height: 0.64; radius: 0.08; blur: 0.6" position="0 0 -0.1"> </a-entity>
+        <a-entity modern-backdrop="width: 1.1; height: 0.64; radius: 0.08; opacity: 0.75; color: #ffffff" position="0 0 0.05"> </a-entity>
         <a-plane position="0 0 0.1" height="0.54" width="1" alpha-video="video: #03" material="blending: additive"></a-plane>
       </xrextras-named-image-target>
 
