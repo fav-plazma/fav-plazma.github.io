@@ -1,0 +1,23 @@
+{
+  "imagePath": "image-targets/quantum_luminance.png",
+  "metadata": null,
+  "name": "quantum",
+  "type": "PLANAR",
+  "properties": {
+    "top": 0,
+    "left": 0,
+    "width": 1536,
+    "height": 2048,
+    "isRotated": true,
+    "originalWidth": 1536,
+    "originalHeight": 2048
+  },
+  "resources": {
+    "originalImage": "quantum_original.png",
+    "croppedImage": "quantum_cropped.png",
+    "thumbnailImage": "quantum_thumbnail.png",
+    "luminanceImage": "quantum_luminance.png"
+  },
+  "created": 1781135655393,
+  "updated": 1781135655393
+}

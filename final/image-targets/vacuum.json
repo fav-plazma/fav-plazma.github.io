@@ -1,0 +1,23 @@
+{
+  "imagePath": "image-targets/vacuum_luminance.png",
+  "metadata": null,
+  "name": "vacuum",
+  "type": "PLANAR",
+  "properties": {
+    "top": 0,
+    "left": 0,
+    "width": 1536,
+    "height": 2048,
+    "isRotated": true,
+    "originalWidth": 1536,
+    "originalHeight": 2048
+  },
+  "resources": {
+    "originalImage": "vacuum_original.png",
+    "croppedImage": "vacuum_cropped.png",
+    "thumbnailImage": "vacuum_thumbnail.png",
+    "luminanceImage": "vacuum_luminance.png"
+  },
+  "created": 1781135658295,
+  "updated": 1781135658295
+}

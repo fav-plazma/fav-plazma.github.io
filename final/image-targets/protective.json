@@ -1,0 +1,23 @@
+{
+  "imagePath": "image-targets/protective_luminance.png",
+  "metadata": null,
+  "name": "protective",
+  "type": "PLANAR",
+  "properties": {
+    "top": 0,
+    "left": 0,
+    "width": 1536,
+    "height": 2048,
+    "isRotated": true,
+    "originalWidth": 1536,
+    "originalHeight": 2048
+  },
+  "resources": {
+    "originalImage": "protective_original.png",
+    "croppedImage": "protective_cropped.png",
+    "thumbnailImage": "protective_thumbnail.png",
+    "luminanceImage": "protective_luminance.png"
+  },
+  "created": 1781135654396,
+  "updated": 1781135654396
+}
