@@ -8,11 +8,11 @@
     <link rel="icon" type="image/x-icon" href="/FAVicon.ico">
     <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@8thwall/engine-binary@1/dist/xr.js" async crossorigin="anonymous" data-preload-chunks="slam"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@8thwall/landing-page@1/dist/landing-page.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@8thwall/landing-page@1/dist/landing-page.js" crossorigin="anonymous"></script>
     <script src="transparent-script.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@8thwall/xrextras@1/dist/xrextras.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
     <script src="app.js"></script>
-
     <script>
       AFRAME.registerComponent('occluder-material', {
         init: function () {
@@ -39,9 +39,105 @@
       });
     </script>
 
+    <style>
+      /* Import your custom font here or use @font-face */
+      @font-face {
+        font-family: 'Atyp';
+        src: url('AtypDisplay-Medium.woff') format('woff');
+        font-weight: 500;
+        font-style: normal;
+      }
+
+      /* Custom Loading Screen Container */
+      #custom-loader {
+        position: fixed;
+        top: 0; left: 0; width: 100vw; height: 100vh;
+        background-color: #ffffff; /* Loader background */
+        z-index: 9999;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: opacity 0.5s ease;
+      }
+
+      /* The Lottie Animation Container */
+      #lottie-container {
+        width: 300px;
+        height: 300px;
+      }
+
+      /* Custom Target Overlay Container */
+      #target-overlay {
+        position: fixed;
+        top: 0; left: 0; width: 100vw; height: 100vh;
+        z-index: 10;
+        pointer-events: none; /* Lets you tap through to the AR scene */
+        transition: opacity 0.3s ease;
+        /* Starts hidden until 8th wall loads, managed by JS */
+        opacity: 0; 
+      }
+
+      .scan-text {
+        position: absolute;
+        top: 3%;
+        width: 100%;
+        text-align: center;
+        font-family: 'Atyp', sans-serif; /* Replace with your font */
+        font-size: 24px;
+        color: #fff;
+      }
+
+      /* The Scanning Bar */
+      .scan-bar {
+        position: absolute;
+        top: 0;
+        width: 100%;
+        height: 30vh;
+        /* 0% top (transparent grey), 100% bottom (solid white) */
+        background: linear-gradient(to bottom, rgba(115, 115, 115, 0) 0%, rgba(235, 235, 235, 0.9) 100%);
+        /* 1.5s down + 1.5s up = 3s total loop */
+        animation: scanAnim 3s linear infinite; 
+      }
+
+      @keyframes scanAnim {
+        0% { transform: translateY(-30vh) scaleY(1); } /* Hidden above */
+        49.99% { transform: translateY(100vh) scaleY(1); } /* Hidden below (1500ms) */
+        50% { transform: translateY(100vh) scaleY(-1); } /* Instant 180 flip */
+        99.99% { transform: translateY(-30vh) scaleY(-1); } /* Move back up (1500ms) */
+        100% { transform: translateY(-30vh) scaleY(1); } /* Instant flip back */
+      }
+    </style>
+
   </head>
   <body>
-    <a-scene vr-mode-ui="enabled: false" ar-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false" landing-page xrextras-loading xrextras-runtime-error renderer="colorManagement:true" xrweb="disableWorldTracking: true">
+    <div id="custom-loader">
+      <div id="lottie-container"></div>
+    </div>
+
+    <div id="target-overlay">
+      <div class="scan-text">Naskenuj panely na zdi</div>
+      <div class="scan-bar"></div>
+    </div>
+
+    <script>
+      var animation = lottie.loadAnimation({
+        container: document.getElementById('lottie-container'),
+        renderer: 'svg',
+        loop: true,
+        autoplay: true,
+        path: 'anim_BLK.json' // YOUR LOTTIE FILE PATH GOES HERE
+      });
+    </script>
+    <a-scene
+    custom-loading 
+    target-tracker
+    vr-mode-ui="enabled: false"
+    ar-mode-ui="enabled: false"
+    device-orientation-permission-ui="enabled: false"
+    landing-page
+    xrextras-runtime-error
+    renderer="colorManagement:true"
+    xrweb="disableWorldTracking: true">
 
       <a-assets>
         <video id="03D" src="03D.mp4" playsinline loop muted crossorigin="anonymous"></video>
