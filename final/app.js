@@ -82,7 +82,7 @@ window.XR8 ? onxrloaded() : window.addEventListener('xrloaded', onxrloaded)
       color: {type: 'color', default: '#e2e9f0'}, // cool white tint
       opacity: {type: 'number', default: 0.35},   // 0 = invisible, 1 = solid
       radius: {type: 'number', default: 0.18},    // corner rounding (0 = square)
-      frost: {type: 'number', default: 0.06},     // speckle strength
+      frost: {type: 'number', default: 0.5},     // speckle strength
     },
     init: function () {
       const mesh = this.el.getObject3D('mesh');
