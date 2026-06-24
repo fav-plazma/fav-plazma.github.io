@@ -106,6 +106,71 @@
         99.99% { transform: translateY(-30vh) scaleY(-1); } /* Move back up (1500ms) */
         100% { transform: translateY(-30vh) scaleY(1); } /* Instant flip back */
       }
+
+      /* Info button: bottom-right, above everything, shown by JS on active target */
+      #info-button {
+        position: fixed;
+        right: 20px;
+        bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+        width: 124px;
+        height: 50px;
+        border: none;
+        border-radius: 16px;
+        background-color: #ffffff;
+        color: #111;
+        font-family: 'Atyp', sans-serif;
+        font-size: 24px;
+        z-index: 10001;
+        display: none; /* JS sets to flex when a target is active */
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+        cursor: pointer;
+        pointer-events: auto;
+      }
+
+      /* Info panel: hidden until the button is tapped */
+      #info-panel {
+        position: fixed;
+        left: 50%;
+        bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+        width: min(90vw, 420px);
+        background-color: rgba(20, 20, 20, 0.92);
+        color: #fff;
+        border-radius: 16px;
+        padding: 24px 28px;
+        z-index: 10000;
+        font-family: 'Atyp', sans-serif;
+        opacity: 0;
+        pointer-events: none;
+        transform: translateX(-50%) translateY(20px);
+        transition: opacity 0.25s ease, transform 0.25s ease;
+      }
+
+      #info-panel.visible {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateX(-50%) translateY(0);
+      }
+
+      #info-text {
+        margin: 0;
+        font-size: 18px;
+        line-height: 1.4;
+      }
+
+      #info-close {
+        position: absolute;
+        top: 8px;
+        right: 12px;
+        background: none;
+        border: none;
+        color: #fff;
+        font-size: 26px;
+        line-height: 1;
+        cursor: pointer;
+        pointer-events: auto;
+      }
     </style>
 
   </head>
@@ -117,6 +182,15 @@
     <div id="target-overlay">
       <div class="scan-text">Naskenuj panely na zdi</div>
       <div class="scan-bar"></div>
+    </div>
+
+    <!-- Shown only while a target is active; opens the info panel -->
+    <button id="info-button" aria-label="Více informací">More info</button>
+
+    <!-- Info panel: text is set per active target by target-tracker -->
+    <div id="info-panel">
+      <button id="info-close" aria-label="Zavřít">&times;</button>
+      <p id="info-text"></p>
     </div>
 
     <script>
@@ -140,53 +214,58 @@
     xrweb="disableWorldTracking: true">
 
       <a-assets>
-        <video id="03D" src="03D.mp4" playsinline loop muted crossorigin="anonymous"></video>
-        <video id="03" src="03_split.mp4" playsinline loop muted crossorigin="anonymous"></video>
-        <video id="06D" src="06D.mp4" playsinline loop muted crossorigin="anonymous"></video>
-        <video id="07D" src="07D.mp4" playsinline loop muted crossorigin="anonymous"></video>
-        <video id="08D" src="08D.mp4" playsinline loop muted crossorigin="anonymous"></video>
+        <video id="01" src="01_double_bg_new_converted.mp4" playsinline loop muted crossorigin="anonymous"></video>
+        <video id="02" src="02_double_bg_new_converted.mp4" playsinline loop muted crossorigin="anonymous"></video>
+        <video id="03" src="03_double_bg_new_converted.mp4" playsinline loop muted crossorigin="anonymous"></video>
+        <video id="04" src="04_double_bg_new_converted.mp4" playsinline loop muted crossorigin="anonymous"></video>
+        <video id="05" src="05_double_bg_new_converted.mp4" playsinline loop muted crossorigin="anonymous"></video>
+        <video id="06" src="06_double_bg_new_converted.mp4" playsinline loop muted crossorigin="anonymous"></video>
+        <video id="07" src="07_double_bg_new_converted.mp4" playsinline loop muted crossorigin="anonymous"></video>
+        <video id="08" src="08_double_bg_new_converted.mp4" playsinline loop muted crossorigin="anonymous"></video>
+        <video id="09" src="09_double_bg_new_converted.mp4" playsinline loop muted crossorigin="anonymous"></video>
+        <video id="10" src="10_double_bg_new_converted.mp4" playsinline loop muted crossorigin="anonymous"></video>
       </a-assets>
 
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
       <xrextras-named-image-target name="analysis">
-        <a-plane position="0 0 0.1" height="0.54" width="1" alpha-video="video: #03"></a-plane>
+        <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #09"></a-plane>
       </xrextras-named-image-target>
 
       <xrextras-named-image-target name="atomic">
-        <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #06D"></a-plane>
+        <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #10"></a-plane>
       </xrextras-named-image-target>
 
       <xrextras-named-image-target name="modeling">
-        <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #06D"></a-plane>
+        <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #08"></a-plane>
       </xrextras-named-image-target>
 
       <xrextras-named-image-target name="nanomat">
-        <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #03D"></a-plane>
+        <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #02"></a-plane>
       </xrextras-named-image-target>
 
       <xrextras-named-image-target name="optical">
-        <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #06D"></a-plane>
+        <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #03"></a-plane>
       </xrextras-named-image-target>
 
       <xrextras-named-image-target name="protective">
-        <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #07D"></a-plane>
+        <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #04"></a-plane>
       </xrextras-named-image-target>
 
       <xrextras-named-image-target name="synthesis">
-        <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #08D"></a-plane>
+        <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #07"></a-plane>
       </xrextras-named-image-target>
 
       <xrextras-named-image-target name="quantum">
-        <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #06D"></a-plane>
+        <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #05"></a-plane>
       </xrextras-named-image-target>
 
       <xrextras-named-image-target name="sustainable">
-        <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #08D"></a-plane>
+        <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #01"></a-plane>
       </xrextras-named-image-target>
 
       <xrextras-named-image-target name="vacuum">
-        <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #06D"></a-plane>
+        <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #06"></a-plane>
       </xrextras-named-image-target>
 
     </a-scene>
