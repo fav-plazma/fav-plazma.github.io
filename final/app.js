@@ -65,19 +65,32 @@ window.XR8 ? onxrloaded() : window.addEventListener('xrloaded', onxrloaded)
   };
 
   // 2. Track found/lost images. Enforces a SINGLE active target (the most
-  //    recently found one that is still tracked) so the panel always knows
-  //    which text to show, then drives the scanner overlay, button and panel.
+  //    recently found one that is still tracked): only its video is shown,
+  //    and it drives the scanner overlay, info button and panel.
   AFRAME.registerComponent('target-tracker', {
     init: function () {
-      this.tracked = []; // currently tracked target names, oldest -> newest
+      this.tracked = [];    // currently tracked target names, oldest -> newest
+      this.contentEls = {}; // name -> the target's <a-plane> child (cached)
 
       this.overlayEl = document.getElementById('target-overlay');
       this.infoBtn = document.getElementById('info-button');
       this.infoPanel = document.getElementById('info-panel');
       this.infoText = document.getElementById('info-text');
 
-      this.infoBtn.addEventListener('click', () => this.openPanel());
+      // Tapping the button toggles the panel. stopPropagation so the
+      // document handler below doesn't immediately re-close it.
+      this.infoBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.togglePanel();
+      });
       document.getElementById('info-close').addEventListener('click', () => this.closePanel());
+
+      // Tapping anywhere outside the panel (and not the button) closes it.
+      document.addEventListener('click', (e) => {
+        if (!this.infoPanel.classList.contains('visible')) return;
+        if (this.infoPanel.contains(e.target) || this.infoBtn.contains(e.target)) return;
+        this.closePanel();
+      });
 
       this.el.addEventListener('xrimagefound', (e) => this.onFound(e.detail.name));
       this.el.addEventListener('xrimagelost', (e) => this.onLost(e.detail.name));
@@ -85,6 +98,17 @@ window.XR8 ? onxrloaded() : window.addEventListener('xrloaded', onxrloaded)
 
     activeTarget: function () {
       return this.tracked.length ? this.tracked[this.tracked.length - 1] : null;
+    },
+
+    // The <a-plane> content for a target, cached. xrextras toggles visibility
+    // on the PARENT (named-image-target); we toggle the CHILD, so we can hide
+    // the video of a target that is tracked but is not the active one.
+    contentEl: function (name) {
+      if (!this.contentEls[name]) {
+        this.contentEls[name] =
+          document.querySelector(`xrextras-named-image-target[name="${name}"] > a-plane`);
+      }
+      return this.contentEls[name];
     },
 
     onFound: function (name) {
@@ -104,6 +128,13 @@ window.XR8 ? onxrloaded() : window.addEventListener('xrloaded', onxrloaded)
 
     updateUI: function () {
       const active = this.activeTarget();
+
+      // Show ONLY the active target's video; hide every other one.
+      imageTargetNames.forEach((name) => {
+        const el = this.contentEl(name);
+        if (el && el.object3D) el.object3D.visible = (name === active);
+      });
+
       if (active) {
         this.overlayEl.style.opacity = '0';  // hide scanner
         this.infoBtn.style.display = 'flex'; // show button
@@ -112,6 +143,14 @@ window.XR8 ? onxrloaded() : window.addEventListener('xrloaded', onxrloaded)
       } else {
         this.overlayEl.style.opacity = '1';  // show scanner
         this.infoBtn.style.display = 'none'; // hide button
+      }
+    },
+
+    togglePanel: function () {
+      if (this.infoPanel.classList.contains('visible')) {
+        this.closePanel();
+      } else {
+        this.openPanel();
       }
     },
 
