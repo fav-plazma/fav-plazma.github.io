@@ -107,13 +107,17 @@
         100% { transform: translateY(-30vh) scaleY(1); } /* Instant flip back */
       }
 
-      /* Info button: bottom-right, above everything, shown by JS on active target */
+      /* Info button: bottom-right, above everything, shown by JS on active
+         target. It links out to the active target's page, so it carries an
+         external-link icon. */
       #info-button {
         position: fixed;
         right: 20px;
         bottom: calc(24px + env(safe-area-inset-bottom, 0px));
-        width: 124px;
+        min-width: 124px;
         height: 46px;
+        padding: 0 18px;
+        box-sizing: border-box;
         border: none;
         border-radius: 16px;
         background-color: rgba(255, 255, 255, 0.75);
@@ -121,56 +125,27 @@
         font-family: 'Atyp', sans-serif;
         font-size: 24px;
         line-height: 0.6;
+        text-decoration: none;
         z-index: 10001;
         display: none; /* JS sets to flex when a target is active */
         align-items: center;
         justify-content: center;
+        gap: 8px;
         box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
         cursor: pointer;
         pointer-events: auto;
       }
 
-      /* Info panel: hidden until the button is tapped */
-      #info-panel {
-        position: fixed;
-        left: 50%;
-        bottom: calc(96px + env(safe-area-inset-bottom, 0px));
-        width: 70%;
-        background-color: rgba(255, 255, 255, 0.75);
-        color: #111;
-        border-radius: 16px;
-        padding: 24px 28px;
-        z-index: 10000;
-        font-family: 'Atyp', sans-serif;
-        opacity: 0;
-        pointer-events: none;
-        transform: translateX(-50%) translateY(20px);
-        transition: opacity 0.25s ease, transform 0.25s ease;
-      }
-
-      #info-panel.visible {
-        opacity: 1;
-        pointer-events: auto;
-        transform: translateX(-50%) translateY(0);
-      }
-
-      #info-text {
-        margin: 0;
-        font-size: 18px;
-        line-height: 1.4;
-      }
-
-      #info-close {
-        position: absolute;
-        top: 8px;
-        right: 12px;
-        background: none;
-        border: none;
-        color: #fff;
-        font-size: 26px;
-        line-height: 1;
-        cursor: pointer;
-        pointer-events: auto;
+      /* The "opens in a new tab" icon */
+      #info-button svg {
+        width: 18px;
+        height: 18px;
+        flex-shrink: 0;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
       }
     </style>
 
@@ -185,14 +160,19 @@
       <div class="scan-bar"></div>
     </div>
 
-    <!-- Shown only while a target is active; opens the info panel -->
-    <button id="info-button" aria-label="Více informací">More info</button>
-
-    <!-- Info panel: text is set per active target by target-tracker -->
-    <div id="info-panel">
-      <button id="info-close" aria-label="Zavřít">&times;</button>
-      <p id="info-text"></p>
-    </div>
+    <!-- Shown only while a target is active. href is set per active target
+         by target-tracker, so it opens that target's own page. -->
+    <a id="info-button"
+       target="_blank"
+       rel="noopener noreferrer"
+       aria-label="Více informací (otevře se v novém okně)">
+      <span>More info</span>
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M14 3h7v7"></path>
+        <path d="M21 3l-9 9"></path>
+        <path d="M19 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"></path>
+      </svg>
+    </a>
 
     <script>
       var animation = lottie.loadAnimation({

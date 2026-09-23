@@ -50,23 +50,23 @@ window.XR8 ? onxrloaded() : window.addEventListener('xrloaded', onxrloaded)
     }
   });
 
-  // One sentence per target, shown in the info panel. EDIT these texts.
-  const targetSentences = {
-    analysis: 'Analýza materiálů odhaluje jejich složení až na úrovni jednotlivých prvků.',
-    atomic: 'Atomová fyzika zkoumá stavbu atomů a chování elektronů v jejich obalu.',
-    modeling: 'Počítačové modelování předpovídá chování materiálů dříve, než vzniknou v laboratoři.',
-    nanomat: 'Nanomateriály mají rozměry tisíckrát menší než lidský vlas a zcela nové vlastnosti.',
-    optical: 'Optika studuje světlo a jeho interakci s hmotou od laserů po čočky.',
-    protective: 'Ochranné vrstvy chrání povrchy před opotřebením, korozí i extrémními teplotami.',
-    quantum: 'Kvantová fyzika popisuje svět nejmenších částic, kde platí jiná pravidla.',
-    sustainable: 'Udržitelné technologie hledají cesty k čistší a úspornější energii.',
-    synthesis: 'Syntéza vytváří zcela nové sloučeniny a materiály na míru.',
-    vacuum: 'Vakuové technologie umožňují experimenty v prostředí téměř bez částic.',
+  // Where the "More info" button links for each target. EDIT these URLs.
+  const targetLinks = {
+    analysis: 'https://example.com/analysis',
+    atomic: 'https://example.com/atomic',
+    modeling: 'https://example.com/modeling',
+    nanomat: 'https://example.com/nanomat',
+    optical: 'https://example.com/optical',
+    protective: 'https://example.com/protective',
+    quantum: 'https://example.com/quantum',
+    sustainable: 'https://example.com/sustainable',
+    synthesis: 'https://example.com/synthesis',
+    vacuum: 'https://example.com/vacuum',
   };
 
   // 2. Track found/lost images. Enforces a SINGLE active target (the most
   //    recently found one that is still tracked): only its video is shown,
-  //    and it drives the scanner overlay, info button and panel.
+  //    and it drives the scanner overlay and the "More info" link button.
   AFRAME.registerComponent('target-tracker', {
     init: function () {
       this.tracked = [];    // currently tracked target names, oldest -> newest
@@ -74,23 +74,6 @@ window.XR8 ? onxrloaded() : window.addEventListener('xrloaded', onxrloaded)
 
       this.overlayEl = document.getElementById('target-overlay');
       this.infoBtn = document.getElementById('info-button');
-      this.infoPanel = document.getElementById('info-panel');
-      this.infoText = document.getElementById('info-text');
-
-      // Tapping the button toggles the panel. stopPropagation so the
-      // document handler below doesn't immediately re-close it.
-      this.infoBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        this.togglePanel();
-      });
-      document.getElementById('info-close').addEventListener('click', () => this.closePanel());
-
-      // Tapping anywhere outside the panel (and not the button) closes it.
-      document.addEventListener('click', (e) => {
-        if (!this.infoPanel.classList.contains('visible')) return;
-        if (this.infoPanel.contains(e.target) || this.infoBtn.contains(e.target)) return;
-        this.closePanel();
-      });
 
       this.el.addEventListener('xrimagefound', (e) => this.onFound(e.detail.name));
       this.el.addEventListener('xrimagelost', (e) => this.onLost(e.detail.name));
@@ -119,10 +102,7 @@ window.XR8 ? onxrloaded() : window.addEventListener('xrloaded', onxrloaded)
     },
 
     onLost: function (name) {
-      const wasActive = this.activeTarget() === name;
       this.tracked = this.tracked.filter((n) => n !== name);
-      // If the panel was open for the target we just lost, close it.
-      if (wasActive) this.closePanel();
       this.updateUI();
     },
 
@@ -135,33 +115,18 @@ window.XR8 ? onxrloaded() : window.addEventListener('xrloaded', onxrloaded)
         if (el && el.object3D) el.object3D.visible = (name === active);
       });
 
-      if (active) {
-        this.overlayEl.style.opacity = '0';  // hide scanner
-        this.infoBtn.style.display = 'flex'; // show button
-        // Keep the panel text in sync if the active target changed.
-        this.infoText.textContent = targetSentences[active] || '';
+      // Scanner overlay is hidden whenever something is being tracked.
+      this.overlayEl.style.opacity = active ? '0' : '1';
+
+      // Point the button at this target's page. If a target has no URL the
+      // button stays hidden rather than linking nowhere.
+      const url = active ? targetLinks[active] : null;
+      if (url) {
+        this.infoBtn.href = url;
+        this.infoBtn.style.display = 'flex';
       } else {
-        this.overlayEl.style.opacity = '1';  // show scanner
-        this.infoBtn.style.display = 'none'; // hide button
+        this.infoBtn.style.display = 'none';
+        this.infoBtn.removeAttribute('href');
       }
-    },
-
-    togglePanel: function () {
-      if (this.infoPanel.classList.contains('visible')) {
-        this.closePanel();
-      } else {
-        this.openPanel();
-      }
-    },
-
-    openPanel: function () {
-      const active = this.activeTarget();
-      if (!active) return;
-      this.infoText.textContent = targetSentences[active] || '';
-      this.infoPanel.classList.add('visible');
-    },
-
-    closePanel: function () {
-      this.infoPanel.classList.remove('visible');
     },
   });
