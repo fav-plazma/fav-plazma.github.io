@@ -31,6 +31,66 @@ const onxrloaded = async () => {
 
 window.XR8 ? onxrloaded() : window.addEventListener('xrloaded', onxrloaded)
 
+// 0. Localization. English, Czech and German only, picked from the device's
+//    preferred languages. Anything else falls back to English. There is no
+//    language switcher by design — detection only.
+const translations = {
+  en: {
+    scan: 'Scan the panels on the wall',
+    moreInfo: 'More info',
+    moreInfoAria: 'More info (opens in a new tab)',
+  },
+  cs: {
+    scan: 'Naskenuj panely na zdi',
+    moreInfo: 'Více informací',
+    moreInfoAria: 'Více informací (otevře se v novém okně)',
+  },
+  de: {
+    scan: 'Scanne die Tafeln an der Wand',
+    moreInfo: 'Mehr Infos',
+    moreInfoAria: 'Mehr Infos (wird in einem neuen Tab geöffnet)',
+  },
+}
+
+// The first device-preferred language we actually support, else English.
+// navigator.languages is ordered by preference, so e.g. ['sk-SK', 'cs-CZ', 'en']
+// correctly yields Czech: Slovak is unsupported, Czech is the next best match.
+const detectLanguage = () => {
+  const preferred = (navigator.languages && navigator.languages.length)
+    ? navigator.languages
+    : [navigator.language || 'en']
+
+  for (const tag of preferred) {
+    const base = String(tag).toLowerCase().split('-')[0] // 'cs-CZ' -> 'cs'
+    if (translations[base]) return base
+  }
+  return 'en'
+}
+
+const lang = detectLanguage()
+const t = translations[lang]
+
+const applyTranslations = () => {
+  document.documentElement.lang = lang
+
+  const scanEl = document.querySelector('.scan-text')
+  if (scanEl) scanEl.textContent = t.scan
+
+  const btn = document.getElementById('info-button')
+  if (btn) {
+    const label = btn.querySelector('span')
+    if (label) label.textContent = t.moreInfo
+    btn.setAttribute('aria-label', t.moreInfoAria)
+  }
+}
+
+// app.js runs from <head>, so the body may not exist yet.
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', applyTranslations)
+} else {
+  applyTranslations()
+}
+
 // 1. Hide default loader and manage Lottie
   AFRAME.registerComponent('custom-loading', {
     init: function () {

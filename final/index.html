@@ -1,5 +1,6 @@
 <!doctype html>
-<html>
+<!-- lang is replaced at runtime by the detected language (en/cs/de) -->
+<html lang="en">
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -85,6 +86,9 @@
         font-family: 'Atyp', sans-serif; /* Replace with your font */
         font-size: 24px;
         color: #fff;
+        /* Keeps the longer German string off the screen edges */
+        padding: 0 16px;
+        box-sizing: border-box;
       }
 
       /* The Scanning Bar */
@@ -156,7 +160,8 @@
     </div>
 
     <div id="target-overlay">
-      <div class="scan-text">Naskenuj panely na zdi</div>
+      <!-- English fallback; replaced at runtime by the detected language -->
+      <div class="scan-text">Scan the panels on the wall</div>
       <div class="scan-bar"></div>
     </div>
 
@@ -165,7 +170,7 @@
     <a id="info-button"
        target="_blank"
        rel="noopener noreferrer"
-       aria-label="Více informací (otevře se v novém okně)">
+       aria-label="More info (opens in a new tab)">
       <span>More info</span>
       <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
         <path d="M14 3h7v7"></path>
