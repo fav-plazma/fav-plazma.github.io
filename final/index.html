@@ -119,7 +119,7 @@
         right: 20px;
         bottom: calc(24px + env(safe-area-inset-bottom, 0px));
         min-width: 124px;
-        height: 46px;
+        height: 50px;
         padding: 0 18px;
         box-sizing: border-box;
         border: none;
@@ -140,16 +140,14 @@
         pointer-events: auto;
       }
 
-      /* The "opens in a new tab" icon */
+      /* The "opens in a new tab" icon. This is a FILLED glyph, so it must not
+         be stroked — a stroke would bloat it and clip against the viewBox.
+         fill: currentColor keeps it matching the button's text colour. */
       #info-button svg {
-        width: 18px;
-        height: 18px;
+        width: 14px;
+        height: 14px;
         flex-shrink: 0;
-        fill: none;
-        stroke: currentColor;
-        stroke-width: 2;
-        stroke-linecap: round;
-        stroke-linejoin: round;
+        fill: currentColor;
       }
     </style>
 
@@ -172,8 +170,8 @@
        rel="noopener noreferrer"
        aria-label="More info (opens in a new tab)">
       <span>More info</span>
-      <svg width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M7.85352 7.5H6.85352V1.70703L0.707031 7.85352L0 7.14648L6.14648 1H0.353516V0H7.85352V7.5Z" fill="black"/>
+      <svg viewBox="0 0 8 8" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+        <path d="M7.85352 7.5H6.85352V1.70703L0.707031 7.85352L0 7.14648L6.14648 1H0.353516V0H7.85352V7.5Z"/>
       </svg>
     </a>
 
