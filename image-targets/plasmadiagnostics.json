@@ -1,0 +1,23 @@
+{
+  "imagePath": "image-targets/plasmadiagnostics_luminance.png",
+  "metadata": null,
+  "name": "plasmadiagnostics",
+  "type": "PLANAR",
+  "properties": {
+    "top": 0,
+    "left": 0,
+    "width": 1536,
+    "height": 2048,
+    "isRotated": true,
+    "originalWidth": 1536,
+    "originalHeight": 2048
+  },
+  "resources": {
+    "originalImage": "plasmadiagnostics_original.png",
+    "croppedImage": "plasmadiagnostics_cropped.png",
+    "thumbnailImage": "plasmadiagnostics_thumbnail.png",
+    "luminanceImage": "plasmadiagnostics_luminance.png"
+  },
+  "created": 1781135651553,
+  "updated": 1781135651553
+}

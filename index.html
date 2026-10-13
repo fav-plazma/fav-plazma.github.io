@@ -14,31 +14,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@8thwall/xrextras@1/dist/xrextras.js" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
     <script src="app.js"></script>
-    <script>
-      AFRAME.registerComponent('occluder-material', {
-        init: function () {
-          // Wait for the model to be loaded
-          this.el.addEventListener('model-loaded', () => {
-            // Get the THREE.js object
-            const obj = this.el.getObject3D('mesh');
-            if (!obj) return;
-
-            // Iterate through all parts of the model
-            obj.traverse(node => {
-              // If this part is a mesh, modify its material
-              if (node.isMesh) {
-                // This is the magic line:
-                // It makes the material invisible (stops it from drawing color)
-                node.material.colorWrite = false;
-                
-                // This line ensures it still "blocks" things behind it
-                node.material.depthWrite = true; 
-              }
-            });
-          });
-        }
-      });
-    </script>
 
     <style>
       /* Import your custom font here or use @font-face */
@@ -74,8 +49,12 @@
         z-index: 10;
         pointer-events: none; /* Lets you tap through to the AR scene */
         transition: opacity 0.3s ease;
-        /* Starts hidden until 8th wall loads, managed by JS */
-        opacity: 0; 
+        /* Hidden unless JS adds .scanning (app ready and no target tracked) */
+        opacity: 0;
+      }
+
+      #target-overlay.scanning {
+        opacity: 1;
       }
 
       .scan-text {
@@ -100,7 +79,14 @@
         /* 0% top (transparent grey), 100% bottom (solid white) */
         background: linear-gradient(to bottom, rgba(115, 115, 115, 0) 0%, rgba(235, 235, 235, 0.9) 100%);
         /* 1.5s down + 1.5s up = 3s total loop */
-        animation: scanAnim 3s linear infinite; 
+        animation: scanAnim 3s linear infinite;
+        /* Only animate while the scanner is actually on screen */
+        animation-play-state: paused;
+        will-change: transform;
+      }
+
+      #target-overlay.scanning .scan-bar {
+        animation-play-state: running;
       }
 
       @keyframes scanAnim {
@@ -192,45 +178,45 @@
     device-orientation-permission-ui="enabled: false"
     landing-page
     xrextras-runtime-error
-    renderer="colorManagement:true"
+    renderer="colorManagement: true; antialias: false"
     xrweb="disableWorldTracking: true">
 
       <a-assets>
-        <video id="01" src="01_double_bg_new_converted.mp4" playsinline loop muted crossorigin="anonymous"></video>
-        <video id="02" src="02_double_bg_new_converted.mp4" playsinline loop muted crossorigin="anonymous"></video>
-        <video id="03" src="03_double_bg_new_converted.mp4" playsinline loop muted crossorigin="anonymous"></video>
-        <video id="04" src="04_double_bg_new_converted.mp4" playsinline loop muted crossorigin="anonymous"></video>
-        <video id="05" src="05_double_bg_new_converted.mp4" playsinline loop muted crossorigin="anonymous"></video>
-        <video id="06" src="06_double_bg_new_converted.mp4" playsinline loop muted crossorigin="anonymous"></video>
-        <video id="07" src="07_double_bg_new_converted.mp4" playsinline loop muted crossorigin="anonymous"></video>
-        <video id="08" src="08_double_bg_new_converted.mp4" playsinline loop muted crossorigin="anonymous"></video>
-        <video id="09" src="09_double_bg_new_converted.mp4" playsinline loop muted crossorigin="anonymous"></video>
-        <video id="10" src="10_double_bg_new_converted.mp4" playsinline loop muted crossorigin="anonymous"></video>
+        <video id="01" src="01_double_bg_new_converted.mp4" preload="metadata" playsinline loop muted crossorigin="anonymous"></video>
+        <video id="02" src="02_double_bg_new_converted.mp4" preload="metadata" playsinline loop muted crossorigin="anonymous"></video>
+        <video id="03" src="03_double_bg_new_converted.mp4" preload="metadata" playsinline loop muted crossorigin="anonymous"></video>
+        <video id="04" src="04_double_bg_new_converted.mp4" preload="metadata" playsinline loop muted crossorigin="anonymous"></video>
+        <video id="05" src="05_double_bg_new_converted.mp4" preload="metadata" playsinline loop muted crossorigin="anonymous"></video>
+        <video id="06" src="06_double_bg_new_converted.mp4" preload="metadata" playsinline loop muted crossorigin="anonymous"></video>
+        <video id="07" src="07_double_bg_new_converted.mp4" preload="metadata" playsinline loop muted crossorigin="anonymous"></video>
+        <video id="08" src="08_double_bg_new_converted.mp4" preload="metadata" playsinline loop muted crossorigin="anonymous"></video>
+        <video id="09" src="09_double_bg_new_converted.mp4" preload="metadata" playsinline loop muted crossorigin="anonymous"></video>
+        <video id="10" src="10_double_bg_new_converted.mp4" preload="metadata" playsinline loop muted crossorigin="anonymous"></video>
       </a-assets>
 
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-      <xrextras-named-image-target name="analysis">
+      <xrextras-named-image-target name="materialanalysis">
         <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #09"></a-plane>
       </xrextras-named-image-target>
 
-      <xrextras-named-image-target name="atomic">
+      <xrextras-named-image-target name="materialsimulations">
         <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #10"></a-plane>
       </xrextras-named-image-target>
 
-      <xrextras-named-image-target name="modeling">
+      <xrextras-named-image-target name="plasmadiagnostics">
         <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #08"></a-plane>
       </xrextras-named-image-target>
 
-      <xrextras-named-image-target name="nanomat">
+      <xrextras-named-image-target name="functionalmaterials">
         <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #02"></a-plane>
       </xrextras-named-image-target>
 
-      <xrextras-named-image-target name="optical">
+      <xrextras-named-image-target name="opticalcoatings">
         <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #03"></a-plane>
       </xrextras-named-image-target>
 
-      <xrextras-named-image-target name="protective">
+      <xrextras-named-image-target name="protectivecoatings">
         <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #04"></a-plane>
       </xrextras-named-image-target>
 
@@ -238,15 +224,15 @@
         <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #07"></a-plane>
       </xrextras-named-image-target>
 
-      <xrextras-named-image-target name="quantum">
+      <xrextras-named-image-target name="quantummaterials">
         <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #05"></a-plane>
       </xrextras-named-image-target>
 
-      <xrextras-named-image-target name="sustainable">
+      <xrextras-named-image-target name="sustainablematerials">
         <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #01"></a-plane>
       </xrextras-named-image-target>
 
-      <xrextras-named-image-target name="vacuum">
+      <xrextras-named-image-target name="vacuumtechnology">
         <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #06"></a-plane>
       </xrextras-named-image-target>
 

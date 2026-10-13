@@ -1,0 +1,23 @@
+{
+  "imagePath": "image-targets/sustainablematerials_luminance.png",
+  "metadata": null,
+  "name": "sustainablematerials",
+  "type": "PLANAR",
+  "properties": {
+    "top": 0,
+    "left": 0,
+    "width": 1536,
+    "height": 2048,
+    "isRotated": true,
+    "originalWidth": 1536,
+    "originalHeight": 2048
+  },
+  "resources": {
+    "originalImage": "sustainablematerials_original.png",
+    "croppedImage": "sustainablematerials_cropped.png",
+    "thumbnailImage": "sustainablematerials_thumbnail.png",
+    "luminanceImage": "sustainablematerials_luminance.png"
+  },
+  "created": 1781135656359,
+  "updated": 1781135656359
+}

@@ -1,0 +1,23 @@
+{
+  "imagePath": "image-targets/materialanalysis_luminance.png",
+  "metadata": null,
+  "name": "materialanalysis",
+  "type": "PLANAR",
+  "properties": {
+    "top": 0,
+    "left": 0,
+    "width": 1536,
+    "height": 2048,
+    "isRotated": true,
+    "originalWidth": 1536,
+    "originalHeight": 2048
+  },
+  "resources": {
+    "originalImage": "materialanalysis_original.png",
+    "croppedImage": "materialanalysis_cropped.png",
+    "thumbnailImage": "materialanalysis_thumbnail.png",
+    "luminanceImage": "materialanalysis_luminance.png"
+  },
+  "created": 1781135649589,
+  "updated": 1781135649589
+}

@@ -1,0 +1,23 @@
+{
+  "imagePath": "image-targets/quantummaterials_luminance.png",
+  "metadata": null,
+  "name": "quantummaterials",
+  "type": "PLANAR",
+  "properties": {
+    "top": 0,
+    "left": 0,
+    "width": 1536,
+    "height": 2048,
+    "isRotated": true,
+    "originalWidth": 1536,
+    "originalHeight": 2048
+  },
+  "resources": {
+    "originalImage": "quantummaterials_original.png",
+    "croppedImage": "quantummaterials_cropped.png",
+    "thumbnailImage": "quantummaterials_thumbnail.png",
+    "luminanceImage": "quantummaterials_luminance.png"
+  },
+  "created": 1781135655393,
+  "updated": 1781135655393
+}

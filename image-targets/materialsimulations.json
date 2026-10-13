@@ -1,0 +1,23 @@
+{
+  "imagePath": "image-targets/materialsimulations_luminance.png",
+  "metadata": null,
+  "name": "materialsimulations",
+  "type": "PLANAR",
+  "properties": {
+    "top": 0,
+    "left": 0,
+    "width": 1536,
+    "height": 2048,
+    "isRotated": true,
+    "originalWidth": 1536,
+    "originalHeight": 2048
+  },
+  "resources": {
+    "originalImage": "materialsimulations_original.png",
+    "croppedImage": "materialsimulations_cropped.png",
+    "thumbnailImage": "materialsimulations_thumbnail.png",
+    "luminanceImage": "materialsimulations_luminance.png"
+  },
+  "created": 1781135650581,
+  "updated": 1781135650581
+}

@@ -1,0 +1,23 @@
+{
+  "imagePath": "image-targets/vacuumtechnology_luminance.png",
+  "metadata": null,
+  "name": "vacuumtechnology",
+  "type": "PLANAR",
+  "properties": {
+    "top": 0,
+    "left": 0,
+    "width": 1536,
+    "height": 2048,
+    "isRotated": true,
+    "originalWidth": 1536,
+    "originalHeight": 2048
+  },
+  "resources": {
+    "originalImage": "vacuumtechnology_original.png",
+    "croppedImage": "vacuumtechnology_cropped.png",
+    "thumbnailImage": "vacuumtechnology_thumbnail.png",
+    "luminanceImage": "vacuumtechnology_luminance.png"
+  },
+  "created": 1781135658295,
+  "updated": 1781135658295
+}

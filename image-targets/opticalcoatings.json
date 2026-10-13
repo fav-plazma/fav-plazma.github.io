@@ -1,0 +1,23 @@
+{
+  "imagePath": "image-targets/opticalcoatings_luminance.png",
+  "metadata": null,
+  "name": "opticalcoatings",
+  "type": "PLANAR",
+  "properties": {
+    "top": 0,
+    "left": 0,
+    "width": 1536,
+    "height": 2048,
+    "isRotated": true,
+    "originalWidth": 1536,
+    "originalHeight": 2048
+  },
+  "resources": {
+    "originalImage": "opticalcoatings_original.png",
+    "croppedImage": "opticalcoatings_cropped.png",
+    "thumbnailImage": "opticalcoatings_thumbnail.png",
+    "luminanceImage": "opticalcoatings_luminance.png"
+  },
+  "created": 1781135653441,
+  "updated": 1781135653441
+}
