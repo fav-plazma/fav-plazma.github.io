@@ -117,12 +117,25 @@ AFRAME.registerComponent('custom-loading', {
   },
 })
 
-// 2. Track found/lost images. Enforces a SINGLE active target (the most
-//    recently found one that is still tracked): only its video is shown AND
-//    playing, and it drives the scanner overlay and the "More info" button.
+// How long the active target may be "lost" before we give up on it. Tracking
+// drops out for a few frames now and then (more so with two panels in view);
+// within this time the video simply stays where it was instead of blinking.
+const LOST_GRACE_MS = 500
+
+// How much closer to the screen centre another panel must be before it takes
+// over from the active one (0 = centre of the screen, 1 = its edge). This
+// stops two visible panels from fighting over which one is active.
+const SWITCH_MARGIN = 0.3
+
+// 2. Track found/lost images. Enforces a SINGLE active target: only its video
+//    is shown AND playing, and it drives the scanner overlay and the "More
+//    info" button. The active target is the tracked panel nearest the centre
+//    of the screen, and it is deliberately "sticky" (see the constants above).
 AFRAME.registerComponent('target-tracker', {
   init: function () {
-    this.tracked = []      // currently tracked target names, oldest -> newest
+    this.tracked = {}      // name -> null while tracked, or the time it was lost
+    this.now = 0           // scene time of the latest frame (ms)
+    this.centre = new THREE.Vector3()
     this.active = null     // the one target whose video is shown and playing
     this.ready = false     // true once the loading screen is gone
     this.contentEls = {}   // name -> the target's <a-plane> child (cached)
@@ -164,16 +177,73 @@ AFRAME.registerComponent('target-tracker', {
     return (el && el.components && el.components['alpha-video']) || null
   },
 
+  // The <xrextras-named-image-target> of a target; xrextras moves and
+  // shows/hides this element as the engine tracks the panel.
+  targetObject: function (name) {
+    const el = this.contentEl(name)
+    return (el && el.parentNode && el.parentNode.object3D) || null
+  },
+
   onFound: function (name) {
-    // Move to the end so it becomes the single active target.
-    this.tracked = this.tracked.filter((n) => n !== name)
-    this.tracked.push(name)
-    this.setActive(this.tracked[this.tracked.length - 1])
+    this.tracked[name] = null
+    this.evaluate()
+    // A panel that is tracked but did not become active stays hidden.
+    if (name !== this.active) this.showContent(name, false)
   },
 
   onLost: function (name) {
-    this.tracked = this.tracked.filter((n) => n !== name)
-    this.setActive(this.tracked.length ? this.tracked[this.tracked.length - 1] : null)
+    if (name in this.tracked) this.tracked[name] = this.now
+    this.evaluate()
+  },
+
+  tick: function (time) {
+    this.now = time
+    if (this.active) this.evaluate()
+  },
+
+  // How far a target's centre is from the centre of the screen
+  // (0 = dead centre, 1 = at the edge, more = outside the view).
+  offCentre: function (name) {
+    const object = this.targetObject(name)
+    const camera = this.el.camera
+    if (!object || !camera) return 10
+    this.centre.copy(object.position).project(camera)
+    return Math.hypot(this.centre.x, this.centre.y)
+  },
+
+  // Decide which single target is active.
+  evaluate: function () {
+    let best = null
+    let bestScore = Infinity
+
+    for (const name in this.tracked) {
+      const lostAt = this.tracked[name]
+      if (lostAt !== null) {
+        // A lost target is dropped at once, except the active one, which is
+        // kept for the grace period in case tracking comes straight back.
+        if (name !== this.active || this.now - lostAt > LOST_GRACE_MS) {
+          delete this.tracked[name]
+          continue
+        }
+      }
+      // The active target gets a head start, so another panel only takes
+      // over when it is clearly closer to the centre of the screen.
+      let score = this.offCentre(name)
+      if (name === this.active) score -= SWITCH_MARGIN
+      if (score < bestScore) {
+        best = name
+        bestScore = score
+      }
+    }
+
+    this.setActive(best)
+
+    // xrextras hides a target the moment it is lost. While the active one is
+    // inside its grace period, keep it on screen at its last position.
+    if (best && this.tracked[best] !== null) {
+      const object = this.targetObject(best)
+      if (object) object.visible = true
+    }
   },
 
   setActive: function (name) {

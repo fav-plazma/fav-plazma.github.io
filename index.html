@@ -10,10 +10,12 @@
     <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@8thwall/engine-binary@1/dist/xr.js" async crossorigin="anonymous" data-preload-chunks="slam"></script>
     <script src="https://cdn.jsdelivr.net/npm/@8thwall/landing-page@1/dist/landing-page.js" crossorigin="anonymous"></script>
-    <script src="transparent-script.js"></script>
+    <script src="transparent-script.js?v=3"></script>
     <script src="https://cdn.jsdelivr.net/npm/@8thwall/xrextras@1/dist/xrextras.js" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
-    <script src="app.js"></script>
+    <!-- Bump ?v= on both local scripts whenever they change, so a phone never
+         runs a cached old script against a new index.html (or the reverse). -->
+    <script src="app.js?v=3"></script>
 
     <style>
       /* Import your custom font here or use @font-face */
