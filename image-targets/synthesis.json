@@ -1,0 +1,23 @@
+{
+  "imagePath": "image-targets/synthesis_luminance.png",
+  "metadata": null,
+  "name": "synthesis",
+  "type": "PLANAR",
+  "properties": {
+    "top": 0,
+    "left": 0,
+    "width": 1536,
+    "height": 2048,
+    "isRotated": true,
+    "originalWidth": 1536,
+    "originalHeight": 2048
+  },
+  "resources": {
+    "originalImage": "synthesis_original.png",
+    "croppedImage": "synthesis_cropped.png",
+    "thumbnailImage": "synthesis_thumbnail.png",
+    "luminanceImage": "synthesis_luminance.png"
+  },
+  "created": 1781135657339,
+  "updated": 1781135657339
+}

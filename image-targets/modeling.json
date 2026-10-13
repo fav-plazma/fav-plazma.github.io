@@ -1,0 +1,23 @@
+{
+  "imagePath": "image-targets/modeling_luminance.png",
+  "metadata": null,
+  "name": "modeling",
+  "type": "PLANAR",
+  "properties": {
+    "top": 0,
+    "left": 0,
+    "width": 1536,
+    "height": 2048,
+    "isRotated": true,
+    "originalWidth": 1536,
+    "originalHeight": 2048
+  },
+  "resources": {
+    "originalImage": "modeling_original.png",
+    "croppedImage": "modeling_cropped.png",
+    "thumbnailImage": "modeling_thumbnail.png",
+    "luminanceImage": "modeling_luminance.png"
+  },
+  "created": 1781135651553,
+  "updated": 1781135651553
+}

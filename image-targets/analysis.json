@@ -1,0 +1,23 @@
+{
+  "imagePath": "image-targets/analysis_luminance.png",
+  "metadata": null,
+  "name": "analysis",
+  "type": "PLANAR",
+  "properties": {
+    "top": 0,
+    "left": 0,
+    "width": 1536,
+    "height": 2048,
+    "isRotated": true,
+    "originalWidth": 1536,
+    "originalHeight": 2048
+  },
+  "resources": {
+    "originalImage": "analysis_original.png",
+    "croppedImage": "analysis_cropped.png",
+    "thumbnailImage": "analysis_thumbnail.png",
+    "luminanceImage": "analysis_luminance.png"
+  },
+  "created": 1781135649589,
+  "updated": 1781135649589
+}

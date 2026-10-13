@@ -1,0 +1,23 @@
+{
+  "imagePath": "image-targets/optical_luminance.png",
+  "metadata": null,
+  "name": "optical",
+  "type": "PLANAR",
+  "properties": {
+    "top": 0,
+    "left": 0,
+    "width": 1536,
+    "height": 2048,
+    "isRotated": true,
+    "originalWidth": 1536,
+    "originalHeight": 2048
+  },
+  "resources": {
+    "originalImage": "optical_original.png",
+    "croppedImage": "optical_cropped.png",
+    "thumbnailImage": "optical_thumbnail.png",
+    "luminanceImage": "optical_luminance.png"
+  },
+  "created": 1781135653441,
+  "updated": 1781135653441
+}

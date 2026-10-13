@@ -1,0 +1,23 @@
+{
+  "imagePath": "image-targets/atomic_luminance.png",
+  "metadata": null,
+  "name": "atomic",
+  "type": "PLANAR",
+  "properties": {
+    "top": 0,
+    "left": 0,
+    "width": 1536,
+    "height": 2048,
+    "isRotated": true,
+    "originalWidth": 1536,
+    "originalHeight": 2048
+  },
+  "resources": {
+    "originalImage": "atomic_original.png",
+    "croppedImage": "atomic_cropped.png",
+    "thumbnailImage": "atomic_thumbnail.png",
+    "luminanceImage": "atomic_luminance.png"
+  },
+  "created": 1781135650581,
+  "updated": 1781135650581
+}

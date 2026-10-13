@@ -1,0 +1,23 @@
+{
+  "imagePath": "image-targets/nanomat_luminance.png",
+  "metadata": null,
+  "name": "nanomat",
+  "type": "PLANAR",
+  "properties": {
+    "top": 0,
+    "left": 0,
+    "width": 1536,
+    "height": 2048,
+    "isRotated": true,
+    "originalWidth": 1536,
+    "originalHeight": 2048
+  },
+  "resources": {
+    "originalImage": "nanomat_original.png",
+    "croppedImage": "nanomat_cropped.png",
+    "thumbnailImage": "nanomat_thumbnail.png",
+    "luminanceImage": "nanomat_luminance.png"
+  },
+  "created": 1781135652456,
+  "updated": 1781135652456
+}

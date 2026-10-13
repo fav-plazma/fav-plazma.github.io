@@ -1,13 +1,19 @@
-<html>
+<!doctype html>
+<!-- lang is replaced at runtime by the detected language (en/cs/de) -->
+<html lang="en">
   <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    
+    <title>Katedra Fyziky</title>
+    <link rel="icon" type="image/x-icon" href="/FAVicon.ico">
     <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
-    <script src="https://unpkg.com/aframe-extras@7.6.0/dist/aframe-extras.min.js"></script>
-    <script src="https://unpkg.com/aframe-geometry-merger-component/dist/aframe-geometry-merger-component.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/akbartus/A-Frame-Occlusion-Component/js/occlusion-component.js"></script>
-    <script src="sprite-animator.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/@8thwall/engine-binary@1/dist/xr.js" async crossorigin="anonymous" data-preload-chunks="slam"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@8thwall/landing-page@1/dist/landing-page.js" crossorigin="anonymous"></script>
+    <script src="transparent-script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@8thwall/xrextras@1/dist/xrextras.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
+    <script src="app.js"></script>
     <script>
       AFRAME.registerComponent('occluder-material', {
         init: function () {
@@ -34,110 +40,215 @@
       });
     </script>
 
+    <style>
+      /* Import your custom font here or use @font-face */
+      @font-face {
+        font-family: 'Atyp';
+        src: url('AtypDisplay-Medium.woff') format('woff');
+        font-weight: 500;
+        font-style: normal;
+      }
+
+      /* Custom Loading Screen Container */
+      #custom-loader {
+        position: fixed;
+        top: 0; left: 0; width: 100vw; height: 100vh;
+        background-color: #ffffff; /* Loader background */
+        z-index: 9999;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: opacity 0.5s ease;
+      }
+
+      /* The Lottie Animation Container */
+      #lottie-container {
+        width: 300px;
+        height: 300px;
+      }
+
+      /* Custom Target Overlay Container */
+      #target-overlay {
+        position: fixed;
+        top: 0; left: 0; width: 100vw; height: 100vh;
+        z-index: 10;
+        pointer-events: none; /* Lets you tap through to the AR scene */
+        transition: opacity 0.3s ease;
+        /* Starts hidden until 8th wall loads, managed by JS */
+        opacity: 0; 
+      }
+
+      .scan-text {
+        position: absolute;
+        top: 3%;
+        width: 100%;
+        text-align: center;
+        font-family: 'Atyp', sans-serif; /* Replace with your font */
+        font-size: 24px;
+        color: #fff;
+        /* Keeps the longer German string off the screen edges */
+        padding: 0 16px;
+        box-sizing: border-box;
+      }
+
+      /* The Scanning Bar */
+      .scan-bar {
+        position: absolute;
+        top: 0;
+        width: 100%;
+        height: 30vh;
+        /* 0% top (transparent grey), 100% bottom (solid white) */
+        background: linear-gradient(to bottom, rgba(115, 115, 115, 0) 0%, rgba(235, 235, 235, 0.9) 100%);
+        /* 1.5s down + 1.5s up = 3s total loop */
+        animation: scanAnim 3s linear infinite; 
+      }
+
+      @keyframes scanAnim {
+        0% { transform: translateY(-30vh) scaleY(1); } /* Hidden above */
+        49.99% { transform: translateY(100vh) scaleY(1); } /* Hidden below (1500ms) */
+        50% { transform: translateY(100vh) scaleY(-1); } /* Instant 180 flip */
+        99.99% { transform: translateY(-30vh) scaleY(-1); } /* Move back up (1500ms) */
+        100% { transform: translateY(-30vh) scaleY(1); } /* Instant flip back */
+      }
+
+      /* Info button: bottom-right, above everything, shown by JS on active
+         target. It links out to the active target's page, so it carries an
+         external-link icon. */
+      #info-button {
+        position: fixed;
+        right: 20px;
+        bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+        min-width: 124px;
+        height: 50px;
+        padding: 0 18px;
+        box-sizing: border-box;
+        border: none;
+        border-radius: 16px;
+        background-color: rgba(255, 255, 255, 0.75);
+        color: #111;
+        font-family: 'Atyp', sans-serif;
+        font-size: 24px;
+        line-height: 0.4;
+        text-decoration: none;
+        z-index: 10001;
+        display: none; /* JS sets to flex when a target is active */
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+        cursor: pointer;
+        pointer-events: auto;
+      }
+
+      /* The "opens in a new tab" icon. This is a FILLED glyph, so it must not
+         be stroked — a stroke would bloat it and clip against the viewBox.
+         fill: currentColor keeps it matching the button's text colour. */
+      #info-button svg {
+        width: 14px;
+        height: 14px;
+        flex-shrink: 0;
+        fill: currentColor;
+      }
+    </style>
+
   </head>
   <body>
-    <a-scene mindar-image="imageTargetSrc: targets_final_3.mind; maxTrack: 1; filterMinCF:0.001; filterBeta: 10" vr-mode-ui="enabled: false" ar-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false" light="defaultLightsEnabled: false">
+    <div id="custom-loader">
+      <div id="lottie-container"></div>
+    </div>
+
+    <div id="target-overlay">
+      <!-- English fallback; replaced at runtime by the detected language -->
+      <div class="scan-text">Scan the panels on the wall</div>
+      <div class="scan-bar"></div>
+    </div>
+
+    <!-- Shown only while a target is active. href is set per active target
+         by target-tracker, so it opens that target's own page. -->
+    <a id="info-button"
+       target="_blank"
+       rel="noopener noreferrer"
+       aria-label="More info (opens in a new tab)">
+      <span>More info</span>
+      <svg viewBox="0 0 8 8" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+        <path d="M7.85352 7.5H6.85352V1.70703L0.707031 7.85352L0 7.14648L6.14648 1H0.353516V0H7.85352V7.5Z"/>
+      </svg>
+    </a>
+
+    <script>
+      var animation = lottie.loadAnimation({
+        container: document.getElementById('lottie-container'),
+        renderer: 'svg',
+        loop: true,
+        autoplay: true,
+        path: 'anim_BLK.json' // YOUR LOTTIE FILE PATH GOES HERE
+      });
+    </script>
+    <a-scene
+    custom-loading 
+    target-tracker
+    vr-mode-ui="enabled: false"
+    ar-mode-ui="enabled: false"
+    device-orientation-permission-ui="enabled: false"
+    landing-page
+    xrextras-runtime-error
+    renderer="colorManagement:true"
+    xrweb="disableWorldTracking: true">
 
       <a-assets>
-        <a-asset-item id="opticke" src="01M_opticke-materialy.glb"></a-asset-item>
-        <img id="nano" src="03D_nanomaterialy.png">
-        <a-asset-item id="udrzitelnost" src="04P_materialy-pro-udrzitelnost_compressed.glb"></a-asset-item>
-        <a-asset-item id="kvantove" src="05M_kvantove-materialy.glb"></a-asset-item>
-        <img id="magnetron" src="06D_magnetronova_depozice_grid.png">
-        <img id="plazma" src="07D_modelovani-a-diagn-plaz_02.png">
-        <img id="rust" src="08D_modelovani-rustu-vrstev_02.png">
-        <a-asset-item id="vakuova" src="09P_vakuova-fyzika_compressed.glb"></a-asset-item>
-        <a-asset-item id="charakterizace" src="10P_charakterizace-mat_compressed.glb"></a-asset-item>
+        <video id="01" src="01_double_bg_new_converted.mp4" playsinline loop muted crossorigin="anonymous"></video>
+        <video id="02" src="02_double_bg_new_converted.mp4" playsinline loop muted crossorigin="anonymous"></video>
+        <video id="03" src="03_double_bg_new_converted.mp4" playsinline loop muted crossorigin="anonymous"></video>
+        <video id="04" src="04_double_bg_new_converted.mp4" playsinline loop muted crossorigin="anonymous"></video>
+        <video id="05" src="05_double_bg_new_converted.mp4" playsinline loop muted crossorigin="anonymous"></video>
+        <video id="06" src="06_double_bg_new_converted.mp4" playsinline loop muted crossorigin="anonymous"></video>
+        <video id="07" src="07_double_bg_new_converted.mp4" playsinline loop muted crossorigin="anonymous"></video>
+        <video id="08" src="08_double_bg_new_converted.mp4" playsinline loop muted crossorigin="anonymous"></video>
+        <video id="09" src="09_double_bg_new_converted.mp4" playsinline loop muted crossorigin="anonymous"></video>
+        <video id="10" src="10_double_bg_new_converted.mp4" playsinline loop muted crossorigin="anonymous"></video>
       </a-assets>
 
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-      <a-entity mindar-image-target="targetIndex: 9" animation-mixer>
-        <a-gltf-model rotation="0 0 0" position="0 0 0" scale="0.56 0.56 0.56" src="#opticke" animation-mixer>
-        </a-gltf-model>
-      </a-entity>
+      <xrextras-named-image-target name="analysis">
+        <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #09"></a-plane>
+      </xrextras-named-image-target>
 
-      <a-entity mindar-image-target="targetIndex: 5" animation-mixer>
-        <a-gltf-model rotation="0 0 0" position="0 0 0" scale="0.8 0.8 0.8" src="#kvantove" animation-mixer>
-        </a-gltf-model>
-      </a-entity>
+      <xrextras-named-image-target name="atomic">
+        <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #10"></a-plane>
+      </xrextras-named-image-target>
 
-      <a-entity mindar-image-target="targetIndex: 6" animation-mixer>
-      </a-entity>
+      <xrextras-named-image-target name="modeling">
+        <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #08"></a-plane>
+      </xrextras-named-image-target>
 
-      <a-entity mindar-image-target="targetIndex: 7" animation-mixer>
-        <a-plane position="0 0 0.1" height="0.56" width="1" material="src: #nano; shader:flat; transparent: true" sprite-animator="cols: 1; rows: 24; totalFrames: 24; fps: 24;">
-        </a-plane>
-      </a-entity>
+      <xrextras-named-image-target name="nanomat">
+        <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #02"></a-plane>
+      </xrextras-named-image-target>
 
-      <a-entity mindar-image-target="targetIndex: 4" animation-mixer>
-        <a-plane position="0 0 0.1" height="0.56" width="1" material="src: #magnetron; shader:flat; transparent: true" sprite-animator="cols: 8; rows: 12; totalFrames: 96; fps: 24;">
-        </a-plane>
-      </a-entity>
+      <xrextras-named-image-target name="optical">
+        <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #03"></a-plane>
+      </xrextras-named-image-target>
 
-      <a-entity mindar-image-target="targetIndex: 1" animation-mixer>
-        <a-plane position="0 0 0.1" height="0.56" width="1" material="src: #plazma; shader:flat; transparent: true" sprite-animator="cols: 1; rows: 24; totalFrames: 24; fps: 24;">
-        </a-plane>
-      </a-entity>
+      <xrextras-named-image-target name="protective">
+        <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #04"></a-plane>
+      </xrextras-named-image-target>
 
-      <a-entity mindar-image-target="targetIndex: 0" animation-mixer>
-        <a-plane position="0 0 0.1" height="0.56" width="1" material="src: #rust; shader:flat; transparent: true" sprite-animator="cols: 8; rows: 12; totalFrames: 96; fps: 24;">
-        </a-plane>
-      </a-entity>
+      <xrextras-named-image-target name="synthesis">
+        <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #07"></a-plane>
+      </xrextras-named-image-target>
 
-      <a-entity mindar-image-target="targetIndex: 8">
-        <a-gltf-model
-          src="P_occlusion_stena.glb"
-          occluder-material  render-order="0"
-          scale="0.56 0.56 0.56"
-          rotation="0 90 0">
-          </a-gltf-model>
-        <a-gltf-model
-          src="#udrzitelnost"
-          animation-mixer
-          render-order="1"
-          scale="0.56 0.56 0.56"
-          rotation="0 90 0">
-        </a-gltf-model>
-        <a-entity light="color: #BBB; type: ambient; intensity: 3.14"></a-entity>
-        <a-entity light="intensity: 5.884; castShadow: true" position="-0.5 1 1"></a-entity>
-      </a-entity>
+      <xrextras-named-image-target name="quantum">
+        <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #05"></a-plane>
+      </xrextras-named-image-target>
 
-      <a-entity mindar-image-target="targetIndex: 2">
-        <a-gltf-model
-          src="P_occlusion_stena.glb"
-          occluder-material  render-order="0"
-          scale="0.56 0.56 0.56"
-          rotation="0 90 0">
-          </a-gltf-model>
-        <a-gltf-model
-          src="#vakuova"
-          animation-mixer
-          render-order="1"
-          scale="0.56 0.56 0.56"
-          rotation="0 90 0">
-        </a-gltf-model>
-        <a-entity light="color: #BBB; type: ambient; intensity: 3.14"></a-entity>
-        <a-entity light="intensity: 5.884; castShadow: true" position="-0.5 1 1"></a-entity>
-      </a-entity>
+      <xrextras-named-image-target name="sustainable">
+        <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #01"></a-plane>
+      </xrextras-named-image-target>
 
-      <a-entity mindar-image-target="targetIndex: 3">
-        <a-gltf-model
-          src="P_occlusion_stena.glb"
-          occluder-material  render-order="0"
-          scale="0.56 0.56 0.56"
-          rotation="0 90 0">
-          </a-gltf-model>
-        <a-gltf-model
-          src="#charakterizace"
-          animation-mixer
-          render-order="1"
-          scale="0.56 0.56 0.56"
-          rotation="0 90 0">
-        </a-gltf-model>
-        <a-entity light="color: #BBB; type: ambient; intensity: 3.14"></a-entity>
-        <a-entity light="intensity: 5.884; castShadow: true" position="-0.5 1 1"></a-entity>
-      </a-entity>
+      <xrextras-named-image-target name="vacuum">
+        <a-plane position="0 0 0.1" height="0.56" width="1" alpha-video="video: #06"></a-plane>
+      </xrextras-named-image-target>
 
     </a-scene>
   </body>
