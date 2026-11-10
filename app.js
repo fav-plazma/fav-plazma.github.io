@@ -19,20 +19,46 @@ const imageTargetNames = [
 // The page the "More info" button opens, at the active target's section.
 const infoPageUrl = 'https://www.kfy.zcu.cz/cs/Ar/'
 
-const onxrloaded = async () => {
-  // Load the metadata JSON for every target. The engine reads each file's
-  // `imagePath` and fetches the luminance image itself, so we only need to
-  // hand it the parsed JSON objects (no bundler / require needed).
-  const imageTargetData = await Promise.all(
-    imageTargetNames.map(name =>
-      fetch(`image-targets/${name}.json`).then((res) => {
-        if (!res.ok) throw new Error(`Failed to load image-targets/${name}.json (${res.status})`)
-        return res.json()
-      })
-    )
-  )
+const domReady = new Promise((resolve) => {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', resolve)
+  } else {
+    resolve()
+  }
+})
 
-  XR8.XrController.configure({imageTargetData})
+const onxrloaded = async () => {
+  try {
+    // Load the metadata JSON for every target. The engine reads each file's
+    // `imagePath` and fetches the luminance image itself, so we only need to
+    // hand it the parsed JSON objects (no bundler / require needed).
+    const imageTargetData = await Promise.all(
+      imageTargetNames.map(name =>
+        fetch(`image-targets/${name}.json`).then((res) => {
+          if (!res.ok) throw new Error(`Failed to load image-targets/${name}.json (${res.status})`)
+          return res.json()
+        })
+      )
+    )
+
+    XR8.XrController.configure({imageTargetData})
+  } catch (err) {
+    console.error(err)
+  }
+
+  // Start the AR session only now that the engine (XR8) exists.
+  //
+  // `landing-page` and `xrweb` are deliberately NOT written on <a-scene> in
+  // index.html. The engine script is loaded `async`, so on some phones and
+  // networks the scene was initialised before XR8 existed. `landing-page`
+  // uses XR8 without checking for it, threw "XR8 is not defined", and that
+  // error stopped A-Frame from initialising every attribute after it —
+  // including `xrweb`. The result: no camera prompt and an endless loader.
+  await domReady
+  const sceneEl = document.querySelector('a-scene')
+  if (!sceneEl) return
+  sceneEl.setAttribute('landing-page', '')
+  sceneEl.setAttribute('xrweb', 'disableWorldTracking: true')
 }
 
 window.XR8 ? onxrloaded() : window.addEventListener('xrloaded', onxrloaded)
@@ -45,16 +71,26 @@ const translations = {
     scan: 'Scan the panels on the wall',
     moreInfo: 'More info',
     moreInfoAria: 'More info (opens in a new tab)',
+    helpText: 'Not loading or no camera access?',
+    helpLink: 'Get help',
+    helpUrl: 'https://www.kfy.zcu.cz/en/Ar/error',
   },
   cs: {
     scan: 'Naskenuj panely na zdi',
     moreInfo: 'Více informací',
     moreInfoAria: 'Více informací (otevře se v novém okně)',
+    helpText: 'Aplikace se nenačítá nebo nemá přístup ke kameře?',
+    helpLink: 'Zobrazit nápovědu',
+    helpUrl: 'https://www.kfy.zcu.cz/cs/Ar/error',
   },
   de: {
     scan: 'Scanne die Tafeln an der Wand',
     moreInfo: 'Mehr Infos',
     moreInfoAria: 'Mehr Infos (wird in einem neuen Tab geöffnet)',
+    helpText: 'Lädt nicht oder kein Kamerazugriff?',
+    helpLink: 'Hilfe anzeigen',
+    // There is no German help page; the English one is used instead.
+    helpUrl: 'https://www.kfy.zcu.cz/en/Ar/error',
   },
 }
 
@@ -95,6 +131,68 @@ if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', applyTranslations)
 } else {
   applyTranslations()
+}
+
+// 0b. Loading watchdog. If the AR session has not started after a while (the
+//     engine could not be downloaded, the camera prompt never appeared, ...)
+//     or the camera was refused, show a help link at the bottom of the loading
+//     screen. This sits ABOVE everything that needs AFRAME / XR8 on purpose:
+//     it must still work when those scripts failed to load from their CDNs.
+const HELP_AFTER_MS = 12000
+
+const startLoadingWatchdog = () => {
+  const hintEl = document.getElementById('loader-help')
+  if (!hintEl) return
+
+  let cameraStatus = null // last 'camerastatuschange' status from 8th Wall
+  let started = false     // true once the AR session is running
+
+  // A short code telling us which stage the app got stuck at:
+  //   A  = A-Frame never loaded          X  = 8th Wall engine never loaded
+  //   C0 = engine loaded, camera never requested
+  //   C1 = camera requested, no answer   C2 = camera refused / unavailable
+  //   C3 = camera stream OK, AR session still did not start
+  const stuckCode = () => {
+    if (!window.AFRAME) return 'A'
+    if (!window.XR8) return 'X'
+    if (cameraStatus === 'failed') return 'C2'
+    if (cameraStatus === 'requesting') return 'C1'
+    if (cameraStatus) return 'C3'
+    return 'C0'
+  }
+
+  const showHelp = () => {
+    if (started) return
+    hintEl.querySelector('.loader-help-text').textContent = t.helpText
+    const link = hintEl.querySelector('a')
+    link.textContent = t.helpLink
+    link.href = t.helpUrl
+    hintEl.querySelector('.loader-help-code').textContent = stuckCode()
+    hintEl.classList.add('visible')
+  }
+
+  const timer = setTimeout(showHelp, HELP_AFTER_MS)
+
+  // Scene events bubble, so listening on the document also works if the
+  // <a-scene> never upgraded to a real A-Frame scene.
+  document.addEventListener('realityready', () => {
+    started = true
+    clearTimeout(timer)
+    hintEl.classList.remove('visible')
+  })
+  document.addEventListener('camerastatuschange', (e) => {
+    cameraStatus = e.detail && e.detail.status
+    // Refused (or no camera at all): no point in waiting for the timeout.
+    if (cameraStatus === 'failed') showHelp()
+    else if (hintEl.classList.contains('visible')) showHelp() // refresh code
+  })
+  document.addEventListener('realityerror', showHelp)
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', startLoadingWatchdog)
+} else {
+  startLoadingWatchdog()
 }
 
 // 1. Custom loading screen: fades out once 8th Wall is ready.
