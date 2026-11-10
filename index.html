@@ -15,7 +15,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
     <!-- Bump ?v= on both local scripts whenever they change, so a phone never
          runs a cached old script against a new index.html (or the reverse). -->
-    <script src="app.js?v=3"></script>
+    <script src="app.js?v=4"></script>
 
     <style>
       /* Import your custom font here or use @font-face */
@@ -42,6 +42,43 @@
       #lottie-container {
         width: 300px;
         height: 300px;
+      }
+
+      /* Help link at the bottom of the loading screen (see app.js watchdog) */
+      #loader-help {
+        position: absolute;
+        left: 0;
+        bottom: calc(28px + env(safe-area-inset-bottom, 0px));
+        width: 100%;
+        padding: 0 24px;
+        box-sizing: border-box;
+        text-align: center;
+        font-family: 'Atyp', sans-serif;
+        font-size: 17px;
+        line-height: 1.4;
+        color: #111;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.4s ease;
+      }
+
+      #loader-help.visible {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      #loader-help a {
+        display: block;
+        margin-top: 4px;
+        padding: 6px 0;
+        color: #111;
+        text-decoration: underline;
+      }
+
+      .loader-help-code {
+        display: block;
+        font-size: 11px;
+        color: #999;
       }
 
       /* Custom Target Overlay Container */
@@ -143,6 +180,13 @@
   <body>
     <div id="custom-loader">
       <div id="lottie-container"></div>
+      <!-- Shown by app.js if loading takes too long or the camera is refused.
+           The small code tells which stage got stuck (see app.js). -->
+      <div id="loader-help">
+        <span class="loader-help-text"></span>
+        <a></a>
+        <span class="loader-help-code"></span>
+      </div>
     </div>
 
     <div id="target-overlay">
@@ -172,16 +216,16 @@
         path: 'anim_BLK.json' // YOUR LOTTIE FILE PATH GOES HERE
       });
     </script>
+    <!-- `landing-page` and `xrweb` are added by app.js once the 8th Wall
+         engine has loaded. Do not put them back here: see onxrloaded. -->
     <a-scene
-    custom-loading 
+    custom-loading
     target-tracker
     vr-mode-ui="enabled: false"
     ar-mode-ui="enabled: false"
     device-orientation-permission-ui="enabled: false"
-    landing-page
     xrextras-runtime-error
-    renderer="colorManagement: true; antialias: false"
-    xrweb="disableWorldTracking: true">
+    renderer="colorManagement: true; antialias: false">
 
       <a-assets>
         <video id="01" src="01_double_bg_new_converted.mp4" preload="metadata" playsinline loop muted crossorigin="anonymous"></video>
